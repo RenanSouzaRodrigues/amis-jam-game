@@ -1,4 +1,34 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+// Made by Dallai Studios - 2025
 
 #include "GameModes/DSLobbyGameMode.h"
+#include "Actors/DSLobbyDummy.h"
+#include "GameFramework/GameStateBase.h"
+#include "GameFramework/PlayerStart.h"
+#include "Kismet/GameplayStatics.h"
+#include "Utils/DSMacros.h"
+
+
+void ADSLobbyGameMode::PostLogin(APlayerController* NewPlayer) {
+	Super::PostLogin(NewPlayer);
+
+	if (!this->PlayerDummyClass) {
+		DS_LOG_ERROR("Lobby Game Mode Error: Player Dummy Class is not defined");
+		return;
+	}
+	
+	TArray<AActor*> playerStarts;
+	UGameplayStatics::GetAllActorsOfClass(this->GetWorld(), APlayerStart::StaticClass(), playerStarts);
+
+	if (playerStarts.Num() > 0) {
+		int32 index = this->GameState->PlayerArray.Num() - 1;
+		if (index < 0) index = 0;
+
+		FVector spawnLocation = playerStarts[index]->GetActorLocation();
+		FRotator spawnRotation = playerStarts[index]->GetActorRotation();
+
+		FActorSpawnParameters spawnParams;
+		spawnParams.Owner = NewPlayer;
+
+		ADSLobbyDummy* dummy = this->GetWorld()->SpawnActor<ADSLobbyDummy>(this->PlayerDummyClass, spawnLocation, spawnRotation, spawnParams);
+	}
+}
