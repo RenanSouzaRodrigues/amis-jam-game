@@ -16,7 +16,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Actor Properties")
 	TSubclassOf<UUserWidget> LobbyWidgetClass;
 
-	UPROPERTY(EditAnywhere, Category="Actor Properties")
+	UPROPERTY()
 	UDSLobbyWidget* LobbyWidgetInstance;
 	
 public:
