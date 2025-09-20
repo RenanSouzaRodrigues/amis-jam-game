@@ -7,10 +7,11 @@
 #include "Kismet/GameplayStatics.h"
 #include "Utils/DSMacros.h"
 
-
 void ADSLobbyGameMode::PostLogin(APlayerController* NewPlayer) {
 	Super::PostLogin(NewPlayer);
 
+	DS_LOG_INFO("Player Connected");
+	
 	if (!this->PlayerDummyClass) {
 		DS_LOG_ERROR("Lobby Game Mode Error: Player Dummy Class is not defined");
 		return;
