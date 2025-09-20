@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "DSLobbyDummy.generated.h"
 
+class UWidgetComponent;
 class UCapsuleComponent;
 
 UCLASS()
@@ -19,9 +20,16 @@ public:
 	UPROPERTY(EditAnywhere, Category="Actor Components")
 	TObjectPtr<USkeletalMeshComponent> DummySkeletalMesh;
 	
+	UPROPERTY(EditAnywhere, Category="Actor Components")
+	TObjectPtr<UWidgetComponent> PlayerNameAndConfirmationWidget;
+	
 public:
 	ADSLobbyDummy();
 
 protected:
 	virtual void BeginPlay() override;
+
+public:
+	UFUNCTION()
+	void UpdatePlayerName(const FText& NewName);
 };

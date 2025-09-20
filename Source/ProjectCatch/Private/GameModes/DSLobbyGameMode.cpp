@@ -5,6 +5,7 @@
 #include "GameFramework/GameStateBase.h"
 #include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
+#include "PlayerStates/DSLobbyPlayerState.h"
 #include "Utils/DSMacros.h"
 
 void ADSLobbyGameMode::PostLogin(APlayerController* NewPlayer) {
@@ -30,6 +31,10 @@ void ADSLobbyGameMode::PostLogin(APlayerController* NewPlayer) {
 		FActorSpawnParameters spawnParams;
 		spawnParams.Owner = NewPlayer;
 
-		ADSLobbyDummy* dummy = this->GetWorld()->SpawnActor<ADSLobbyDummy>(this->PlayerDummyClass, spawnLocation, spawnRotation, spawnParams);
+		if (ADSLobbyDummy* dummy = this->GetWorld()->SpawnActor<ADSLobbyDummy>(this->PlayerDummyClass, spawnLocation, spawnRotation, spawnParams)) {
+			if (const auto playerState = Cast<ADSLobbyPlayerState>(NewPlayer->GetPlayerState<APlayerState>())) {
+				playerState->SetLobbyDummy(dummy);
+			}	
+		}
 	}
 }
