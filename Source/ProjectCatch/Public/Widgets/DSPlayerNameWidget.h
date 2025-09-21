@@ -21,6 +21,13 @@ public:
 	UTextBlock* PlayerNameLabel;
 
 public:
+	UPROPERTY(EditAnywhere, Category="Actor Properties")
+	TObjectPtr<UTexture2D> ReadyItem;
+
+	UPROPERTY(EditAnywhere, Category="Actor Properties")
+	TObjectPtr<UTexture2D> NotReadyIcon;
+
+public:
 	void ShowConfirmationImage() const;
 	void HideConfirmationImage() const;
 	void ChangePlayerName(const FText& newName) const;
