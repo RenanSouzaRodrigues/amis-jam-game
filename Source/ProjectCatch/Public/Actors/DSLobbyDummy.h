@@ -31,5 +31,5 @@ protected:
 
 public:
 	UFUNCTION()
-	void UpdatePlayerName(const FText& NewName);
+	void UpdatePlayerName(const FText& NewName) const;
 };

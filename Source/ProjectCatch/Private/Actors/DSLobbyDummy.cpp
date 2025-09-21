@@ -1,9 +1,10 @@
 // Made by Dallai Studios - 2025
 
 #include "Actors/DSLobbyDummy.h"
-
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Utils/DSMacros.h"
+#include "Widgets/DSPlayerNameWidget.h"
 
 ADSLobbyDummy::ADSLobbyDummy() {
 	PrimaryActorTick.bCanEverTick = false;
@@ -22,4 +23,12 @@ ADSLobbyDummy::ADSLobbyDummy() {
 
 void ADSLobbyDummy::BeginPlay() {
 	Super::BeginPlay();
+}
+
+void ADSLobbyDummy::UpdatePlayerName(const FText& NewName) const {
+	if (const UDSPlayerNameWidget* widget = Cast<UDSPlayerNameWidget>(this->PlayerNameAndConfirmationWidget->GetWidget())) {
+		widget->ChangePlayerName(NewName);
+	} else {
+		DS_LOG_ERROR("Player Name Widget is not defined on the Lobby Dummy");
+	}
 }
