@@ -22,6 +22,9 @@ public:
 	
 	UPROPERTY(EditAnywhere, Category="Actor Components")
 	TObjectPtr<UWidgetComponent> PlayerNameAndConfirmationWidget;
+
+	UPROPERTY(EditAnywhere, Category="Actor Components")
+	TObjectPtr<UStaticMeshComponent> ConfirmationMesh;
 	
 public:
 	ADSLobbyDummy();

@@ -15,20 +15,8 @@ class PROJECTCATCH_API UDSPlayerNameWidget : public UUserWidget {
 
 public:
 	UPROPERTY(meta=(BindWidget))
-	UImage* ConfirmationImage;
-
-	UPROPERTY(meta=(BindWidget))
 	UTextBlock* PlayerNameLabel;
 
 public:
-	UPROPERTY(EditAnywhere, Category="Actor Properties")
-	TObjectPtr<UTexture2D> ReadyItem;
-
-	UPROPERTY(EditAnywhere, Category="Actor Properties")
-	TObjectPtr<UTexture2D> NotReadyIcon;
-
-public:
-	void ShowConfirmationImage() const;
-	void HideConfirmationImage() const;
 	void ChangePlayerName(const FText& newName) const;
 };
