@@ -4,12 +4,10 @@
 #include "Actors/DSLobbyDummy.h"
 #include "Net/UnrealNetwork.h"
 
-// ====================================================================
-// Unreal Lifecycle Methods
-// ====================================================================
 ADSLobbyPlayerState::ADSLobbyPlayerState() {
 	this->bReplicates = true;
 	this->PlayerIsReady = false;
+	this->LobbyDummy = nullptr;
 }
 
 void ADSLobbyPlayerState::BeginPlay() {
@@ -19,28 +17,21 @@ void ADSLobbyPlayerState::BeginPlay() {
 void ADSLobbyPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	// Define every property  that needs to be replicated; -Dallai
+	// Define every property that needs to be replicated; -Dallai
 	DOREPLIFETIME(ADSLobbyPlayerState, LobbyDummy)
-	DOREPLIFETIME(ADSLobbyPlayerState, PlayerName);
+	DOREPLIFETIME(ADSLobbyPlayerState, PlayerName)
+	DOREPLIFETIME(ADSLobbyPlayerState, PlayerIsReady)
 }
 
-
-
-// ====================================================================
-// Player Lobby Dummy
-// ====================================================================
+// Player Dummy
 void ADSLobbyPlayerState::SetLobbyDummy(ADSLobbyDummy* Dummy) {
 	this->LobbyDummy = Dummy;
 }
 
 
-
-// ====================================================================
 // Player Name
-// ====================================================================
 void ADSLobbyPlayerState::Server_ChangePlayerName_Implementation(const FText& newName) {
 	this->PlayerName = newName;
-	if (this->HasAuthority()) this->OnRep_ChangePlayerName();
 }
 
 void ADSLobbyPlayerState::OnRep_ChangePlayerName() const {
@@ -50,19 +41,17 @@ void ADSLobbyPlayerState::OnRep_ChangePlayerName() const {
 }
 
 
-
-// ====================================================================
 // Player Confirmation
-// ====================================================================
-void ADSLobbyPlayerState::Server_TogglePlayerReady_Implementation(const bool value) {
-	this->PlayerIsReady = value;
-	if (this->HasAuthority()) {
-		this->OnRep_TogglePlayerReady();
-	}
+void ADSLobbyPlayerState::Server_CheckPlayerReady_Implementation() {
+	this->PlayerIsReady = true;
 }
 
-void ADSLobbyPlayerState::OnRep_TogglePlayerReady() const {
+void ADSLobbyPlayerState::Server_UncheckPlayerReady_Implementation() {
+	this->PlayerIsReady = false;
+}
+
+void ADSLobbyPlayerState::OnRep_PlayerIsReady() const {
 	if (this->LobbyDummy) {
-		this->LobbyDummy->TogglePlayerConfirmation(this->PlayerIsReady);
+		if (this->PlayerIsReady) this->LobbyDummy->SetIsReady(); else this->LobbyDummy->SetIsNotReady();
 	}
 }

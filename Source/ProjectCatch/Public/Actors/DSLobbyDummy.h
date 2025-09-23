@@ -37,5 +37,8 @@ public:
 	void UpdatePlayerName(const FText& NewName) const;
 
 	UFUNCTION()
-	void TogglePlayerConfirmation(const bool value) const;
+	void SetIsReady() const;
+
+	UFUNCTION()
+	void SetIsNotReady() const;
 };

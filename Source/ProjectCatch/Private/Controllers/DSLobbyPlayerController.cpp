@@ -20,17 +20,17 @@ void ADSLobbyPlayerController::BeginPlay() {
 	}
 
 	this->LobbyWidgetInstance = CreateWidget<UDSLobbyWidget>(this->GetWorld(), this->LobbyWidgetClass);
+
 	if (!this->LobbyWidgetInstance) {
 		DS_LOG_ERROR("Lobby Player Controller Error: Lobby Widget instance is invalid");
 		return;
 	}
 
-	if (this->IsLocalPlayerController()) {
-		if (this->HasAuthority()) {
-			this->ConfigureControllerWidget(true);
-		} else {
-			this->ConfigureControllerWidget(false);
-		}
+	if (this->HasAuthority()) {
+		this->ConfigureControllerWidget(true);
+		this->ConfigurePlayerStateDummy(true);
+	} else {
+		this->ConfigureControllerWidget(false);
 	}
 }
 
@@ -40,19 +40,11 @@ void ADSLobbyPlayerController::ConfigureControllerWidget(const bool isHost) cons
 	this->LobbyWidgetInstance->AddToViewport();
 }
 
-void ADSLobbyPlayerController::OnRep_PlayerState() {
-	Super::OnRep_PlayerState();
-
-	ADSLobbyPlayerState* playerState = this->GetPlayerState<ADSLobbyPlayerState>();
-	if (!playerState) {
-		DS_LOG_ERROR("Player State is invalid on the Lobby player controller");
-		return;
-	}
-
-	if (this->HasAuthority()) {
-		playerState->Server_ChangePlayerName(FText::FromString("Server"));
+void ADSLobbyPlayerController::ConfigurePlayerStateDummy(const bool isHost) const {
+	if (isHost) {
+		this->GetPlayerState<ADSLobbyPlayerState>()->Server_ChangePlayerName(FText::FromString("Server"));
 	} else {
-		playerState->Server_ChangePlayerName(FText::FromString("Client"));
+		this->GetPlayerState<ADSLobbyPlayerState>()->Server_ChangePlayerName(FText::FromString("Client"));
 	}
 	
 	if (!this->LobbyWidgetInstance) {
@@ -60,5 +52,11 @@ void ADSLobbyPlayerController::OnRep_PlayerState() {
 		return;
 	}
 
-	this->LobbyWidgetInstance->SetPlayerStateReference(playerState);
+	this->LobbyWidgetInstance->SetPlayerStateReference(this->GetPlayerState<ADSLobbyPlayerState>());
+}
+
+void ADSLobbyPlayerController::OnRep_PlayerState() {
+	Super::OnRep_PlayerState();
+	DS_LOG_ERROR("This is client");
+	this->ConfigurePlayerStateDummy(false);
 }

@@ -21,6 +21,10 @@ void UDSLobbyWidget::NativeOnInitialized() {
 		this->PlayerReadyButton->OnClicked.AddDynamic(this, &UDSLobbyWidget::OnPlayerReady);
 	}
 
+	if (this->PlayerNotReadyButton) {
+		this->PlayerNotReadyButton->OnClicked.AddDynamic(this, &UDSLobbyWidget::OnPlayerNotReady);
+	}
+	
 	if (this->ReturnButton) {
 		this->ReturnButton->OnClicked.AddDynamic(this, &UDSLobbyWidget::OnReturnToMainMenu);
 	}
@@ -77,7 +81,14 @@ void UDSLobbyWidget::OnCancelSession() {
 void UDSLobbyWidget::OnPlayerReady() {
 	DS_LOG_SUCCESS("Client Ready to Play");
 	if (this->LobbyPlayerStateReference) {
-		this->LobbyPlayerStateReference->Server_TogglePlayerReady(true);
+		this->LobbyPlayerStateReference->Server_CheckPlayerReady();
+	}
+}
+
+void UDSLobbyWidget::OnPlayerNotReady() {
+	DS_LOG_INFO("Client not ready to play");
+	if (this->LobbyPlayerStateReference) {
+		this->LobbyPlayerStateReference->Server_UncheckPlayerReady();
 	}
 }
 

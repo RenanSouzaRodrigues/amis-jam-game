@@ -25,6 +25,9 @@ protected:
 	UButton* PlayerReadyButton;
 
 	UPROPERTY(meta=(BindWidget))
+	UButton* PlayerNotReadyButton;
+
+	UPROPERTY(meta=(BindWidget))
 	UButton* ReturnButton;
 
 	UPROPERTY(meta=(BindWidget))
@@ -63,6 +66,9 @@ protected:
 
 	UFUNCTION()
 	void OnPlayerReady();
+
+	UFUNCTION()
+	void OnPlayerNotReady();
 
 	UFUNCTION()
 	void OnCancelSession();

@@ -12,36 +12,26 @@ class FLifetimeProperty;
 UCLASS()
 class PROJECTCATCH_API ADSLobbyPlayerState : public APlayerState {
 	GENERATED_BODY()
-	
-	// ====================================================================
-	// Unreal Lifecycle Methods
-	// ====================================================================
+
 public:
 	ADSLobbyPlayerState();
 	virtual void BeginPlay() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
-
 	
-	// ====================================================================
-	// Player Lobby Dummy
-	// ====================================================================
+	// Player Dummy Replication
 public:
 	UPROPERTY(Replicated)
-	ADSLobbyDummy* LobbyDummy { nullptr };
+	ADSLobbyDummy* LobbyDummy;
 	
 	UFUNCTION()
 	void SetLobbyDummy(ADSLobbyDummy* Dummy);
-	
 
 	
-	// ====================================================================
-	// Player Name
-	// ====================================================================
+	// Player Name Replication
 public:
 	UPROPERTY(ReplicatedUsing=OnRep_ChangePlayerName)
 	FText PlayerName { FText::FromString("Player Name") };
-
+	
 	UFUNCTION(Server, Reliable)
 	void Server_ChangePlayerName(const FText& newName);
 	void Server_ChangePlayerName_Implementation(const FText& newName);
@@ -50,17 +40,19 @@ public:
 	void OnRep_ChangePlayerName() const;
 
 	
-	// ====================================================================
-	// Player Confirmation
-	// ====================================================================
+	// Player Confirmation Replication
 public:
-	UPROPERTY(ReplicatedUsing=OnRep_TogglePlayerReady)
+	UPROPERTY(ReplicatedUsing=OnRep_PlayerIsReady)
 	bool PlayerIsReady;
 
 	UFUNCTION(Server, Reliable)
-	void Server_TogglePlayerReady(const bool value);
-	void Server_TogglePlayerReady_Implementation(const bool value);
+	void Server_CheckPlayerReady();
+	void Server_CheckPlayerReady_Implementation();
+
+	UFUNCTION(Server, Reliable)
+	void Server_UncheckPlayerReady();
+	void Server_UncheckPlayerReady_Implementation();
 	
 	UFUNCTION()
-	void OnRep_TogglePlayerReady() const;
+	void OnRep_PlayerIsReady() const;
 };
