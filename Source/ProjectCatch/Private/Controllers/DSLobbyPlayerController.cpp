@@ -1,6 +1,8 @@
 // Made by Dallai Studios - 2025
 
 #include "Controllers/DSLobbyPlayerController.h"
+
+#include "Actors/DSLobbyDummy.h"
 #include "Blueprint/UserWidget.h"
 #include "PlayerStates/DSLobbyPlayerState.h"
 #include "Utils/DSMacros.h"
@@ -57,4 +59,7 @@ void ADSLobbyPlayerController::OnRep_PlayerState() {
 	}
 
 	this->LobbyWidgetInstance->SetPlayerStateReference(playerState);
+	if (playerState && this->HasAuthority()) {
+		playerState->Server_TogglePlayerReady(true);
+	} 
 }

@@ -15,9 +15,6 @@ void ADSLobbyPlayerState::BeginPlay() {
 	Super::BeginPlay();
 	if (this->LobbyDummy) {
 		this->Server_ChangePlayerName(FText::FromString("Player Name"));
-		if (this->HasAuthority()) {
-			
-		}
 	}
 }
 
@@ -36,9 +33,6 @@ void ADSLobbyPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 // ====================================================================
 void ADSLobbyPlayerState::SetLobbyDummy(ADSLobbyDummy* Dummy) {
 	this->LobbyDummy = Dummy;
-	if (this->LobbyDummy && this->HasAuthority()) {
-		this->LobbyDummy->TogglePlayerConfirmation();
-	}
 }
 
 
@@ -69,6 +63,6 @@ void ADSLobbyPlayerState::Server_TogglePlayerReady_Implementation(const bool val
 
 void ADSLobbyPlayerState::OnRep_TogglePlayerReady() const {
 	if (this->LobbyDummy) {
-		this->LobbyDummy->TogglePlayerConfirmation();
+		this->LobbyDummy->TogglePlayerConfirmation(this->PlayerIsReady);
 	}
 }

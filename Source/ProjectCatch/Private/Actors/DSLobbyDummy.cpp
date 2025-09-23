@@ -22,6 +22,8 @@ ADSLobbyDummy::ADSLobbyDummy() {
 
 	this->ConfirmationMesh = this->CreateDefaultSubobject<UStaticMeshComponent>("Player Confirmation Mesh");
 	this->ConfirmationMesh->SetupAttachment(this->DummyCapsule);
+	this->ConfirmationMesh->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+	this->ConfirmationMesh->SetEnableGravity(false);
 	this->ConfirmationMesh->SetHiddenInGame(true);
 }
 
@@ -32,13 +34,11 @@ void ADSLobbyDummy::BeginPlay() {
 void ADSLobbyDummy::UpdatePlayerName(const FText& NewName) const {
 	if (const UDSPlayerNameWidget* widget = Cast<UDSPlayerNameWidget>(this->PlayerNameWidget->GetWidget())) {
 		widget->ChangePlayerName(NewName);
-	} else {
-		DS_LOG_ERROR("Player Name Widget is not defined on the Lobby Dummy");
 	}
 }
 
-void ADSLobbyDummy::TogglePlayerConfirmation() const {
+void ADSLobbyDummy::TogglePlayerConfirmation(const bool value) const {
 	if (this->ConfirmationMesh) {
-		this->ConfirmationMesh->SetHiddenInGame(!this->ConfirmationMesh->bHiddenInGame);
+		this->ConfirmationMesh->SetHiddenInGame(!value);
 	}
 }
