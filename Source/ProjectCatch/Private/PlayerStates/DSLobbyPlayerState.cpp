@@ -33,8 +33,8 @@ void ADSLobbyPlayerState::SetLobbyDummy(ADSLobbyDummy* Dummy) {
 		return;
 	}
 
-	this->Server_ChangePlayerName_Implementation(FText::FromString("Client"));
-	this->Server_CheckPlayerReady_Implementation();
+	this->Server_ChangePlayerName(FText::FromString("Client"));
+	this->Server_UncheckPlayerReady();
 }
 
 

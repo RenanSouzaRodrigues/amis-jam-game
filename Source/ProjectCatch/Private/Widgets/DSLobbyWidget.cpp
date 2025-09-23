@@ -38,6 +38,7 @@ void UDSLobbyWidget::HideButtons() const {
 	if (this->StartGameButton) this->StartGameButton->SetVisibility(ESlateVisibility::Collapsed);
 	if (this->CancelButton) this->CancelButton->SetVisibility(ESlateVisibility::Collapsed);
 	if (this->PlayerReadyButton) this->PlayerReadyButton->SetVisibility(ESlateVisibility::Collapsed);
+	if (this->PlayerNotReadyButton) this->PlayerNotReadyButton->SetVisibility(ESlateVisibility::Collapsed);
 	if (this->ReturnButton) this->ReturnButton->SetVisibility(ESlateVisibility::Collapsed);
 }
 
@@ -82,6 +83,8 @@ void UDSLobbyWidget::OnPlayerReady() {
 	DS_LOG_SUCCESS("Client Ready to Play");
 	if (this->LobbyPlayerStateReference) {
 		this->LobbyPlayerStateReference->Server_CheckPlayerReady();
+		if (this->PlayerReadyButton) this->PlayerReadyButton->SetVisibility(ESlateVisibility::Collapsed);
+		if (this->PlayerNotReadyButton) this->PlayerNotReadyButton->SetVisibility(ESlateVisibility::Visible);
 	}
 }
 
