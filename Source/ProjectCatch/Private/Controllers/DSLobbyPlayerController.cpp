@@ -29,6 +29,11 @@ void ADSLobbyPlayerController::BeginPlay() {
 }
 
 void ADSLobbyPlayerController::ConfigureControllerWidget(const bool isHost) const {
+	if (!this->LobbyWidgetInstance) {
+		DS_LOG_ERROR("Lobby Player Controller Error: Lobby widget instance is invalid. Can't configure controller lobby widget");
+		return;
+	}
+	
 	if (isHost) this->LobbyWidgetInstance->SetUIForHost(true);
 
 	this->LobbyWidgetInstance->BuildWidget();
