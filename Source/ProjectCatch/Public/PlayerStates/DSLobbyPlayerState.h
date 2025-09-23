@@ -32,7 +32,7 @@ public:
 	
 	UFUNCTION()
 	void SetLobbyDummy(ADSLobbyDummy* Dummy);
-
+	
 
 	
 	// ====================================================================
@@ -48,4 +48,20 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_ChangePlayerName(const FText& newName);
 	void Server_ChangePlayerName_Implementation(const FText& newName);
+
+
+	
+	// ====================================================================
+	// Player Confirmation
+	// ====================================================================
+public:
+	UPROPERTY(ReplicatedUsing=OnRep_TogglePlayerReady)
+	bool PlayerIsReady { false };
+
+	UFUNCTION(Server, Reliable)
+	void Server_TogglePlayerReady(const bool value);
+	void Server_TogglePlayerReady_Implementation(const bool value);
+	
+	UFUNCTION()
+	void OnRep_TogglePlayerReady();
 };

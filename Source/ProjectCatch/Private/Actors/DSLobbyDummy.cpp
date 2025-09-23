@@ -37,7 +37,7 @@ void ADSLobbyDummy::UpdatePlayerName(const FText& NewName) const {
 	}
 }
 
-void ADSLobbyDummy::TogglePlayerConfirmation() {
+void ADSLobbyDummy::TogglePlayerConfirmation() const {
 	if (this->ConfirmationMesh) {
 		this->ConfirmationMesh->SetHiddenInGame(!this->ConfirmationMesh->bHiddenInGame);
 	}
