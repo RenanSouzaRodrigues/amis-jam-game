@@ -10,8 +10,6 @@
 
 void ADSLobbyPlayerController::BeginPlay() {
 	Super::BeginPlay();
-
-	this->bReplicates = true;
 	
 	this->bShowMouseCursor = true;
 	this->SetInputMode(FInputModeUIOnly());
@@ -26,10 +24,8 @@ void ADSLobbyPlayerController::BeginPlay() {
 		DS_LOG_ERROR("Lobby Player Controller Error: Lobby Widget instance is invalid");
 		return;
 	}
-	
-	if (this->HasAuthority()) this->OnRep_PlayerState();
-	
-	if (this->IsLocalController()) {
+
+	if (this->IsLocalPlayerController()) {
 		if (this->HasAuthority()) {
 			this->ConfigureControllerWidget(true);
 		} else {
@@ -53,13 +49,16 @@ void ADSLobbyPlayerController::OnRep_PlayerState() {
 		return;
 	}
 
+	if (this->HasAuthority()) {
+		playerState->Server_ChangePlayerName(FText::FromString("Server"));
+	} else {
+		playerState->Server_ChangePlayerName(FText::FromString("Client"));
+	}
+	
 	if (!this->LobbyWidgetInstance) {
 		DS_LOG_ERROR("Lobby Widget Instance is invalid on the player state OnRep function inside Lobby player controller");
 		return;
 	}
 
 	this->LobbyWidgetInstance->SetPlayerStateReference(playerState);
-	if (playerState && this->HasAuthority()) {
-		playerState->Server_TogglePlayerReady(true);
-	} 
 }

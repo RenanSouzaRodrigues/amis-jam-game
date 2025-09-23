@@ -3,7 +3,6 @@
 #include "Actors/DSLobbyDummy.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/WidgetComponent.h"
-#include "Utils/DSMacros.h"
 #include "Widgets/DSPlayerNameWidget.h"
 
 ADSLobbyDummy::ADSLobbyDummy() {
@@ -21,14 +20,16 @@ ADSLobbyDummy::ADSLobbyDummy() {
 	this->PlayerNameWidget->SetupAttachment(this->DummyCapsule);
 
 	this->ConfirmationMesh = this->CreateDefaultSubobject<UStaticMeshComponent>("Player Confirmation Mesh");
+	this->ConfirmationMesh->SetIsReplicated(true);
 	this->ConfirmationMesh->SetupAttachment(this->DummyCapsule);
 	this->ConfirmationMesh->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
 	this->ConfirmationMesh->SetEnableGravity(false);
-	this->ConfirmationMesh->SetHiddenInGame(true);
 }
 
 void ADSLobbyDummy::BeginPlay() {
 	Super::BeginPlay();
+
+	if (this->ConfirmationMesh) this->ConfirmationMesh->SetHiddenInGame(true);
 }
 
 void ADSLobbyDummy::UpdatePlayerName(const FText& NewName) const {

@@ -9,13 +9,11 @@
 // ====================================================================
 ADSLobbyPlayerState::ADSLobbyPlayerState() {
 	this->bReplicates = true;
+	this->PlayerIsReady = false;
 }
 
 void ADSLobbyPlayerState::BeginPlay() {
 	Super::BeginPlay();
-	if (this->LobbyDummy) {
-		this->Server_ChangePlayerName(FText::FromString("Player Name"));
-	}
 }
 
 void ADSLobbyPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
@@ -58,7 +56,9 @@ void ADSLobbyPlayerState::OnRep_ChangePlayerName() const {
 // ====================================================================
 void ADSLobbyPlayerState::Server_TogglePlayerReady_Implementation(const bool value) {
 	this->PlayerIsReady = value;
-	if (this->HasAuthority()) this->OnRep_TogglePlayerReady();
+	if (this->HasAuthority()) {
+		this->OnRep_TogglePlayerReady();
+	}
 }
 
 void ADSLobbyPlayerState::OnRep_TogglePlayerReady() const {

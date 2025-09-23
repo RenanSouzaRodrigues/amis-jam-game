@@ -67,15 +67,18 @@ void UDSLobbyWidget::SetPlayerStateReference(ADSLobbyPlayerState* PlayerState) {
 }
 
 void UDSLobbyWidget::OnStartGame() {
-	DS_LOG_INFO("Server Start Game");
+	DS_LOG_SUCCESS("Server Start Game");
 }
 
 void UDSLobbyWidget::OnCancelSession() {
-	DS_LOG_INFO("Server Cancel Game");
+	DS_LOG_SUCCESS("Server Cancel Game");
 }
 
 void UDSLobbyWidget::OnPlayerReady() {
-	DS_LOG_INFO("Client Ready to Play");
+	DS_LOG_SUCCESS("Client Ready to Play");
+	if (this->LobbyPlayerStateReference) {
+		this->LobbyPlayerStateReference->Server_TogglePlayerReady(true);
+	}
 }
 
 void UDSLobbyWidget::OnReturnToMainMenu() {

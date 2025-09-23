@@ -32,6 +32,8 @@ void ADSLobbyGameMode::PostLogin(APlayerController* NewPlayer) {
 		spawnParams.Owner = NewPlayer;
 
 		if (ADSLobbyDummy* dummy = this->GetWorld()->SpawnActor<ADSLobbyDummy>(this->PlayerDummyClass, spawnLocation, spawnRotation, spawnParams)) {
+			dummy->SetReplicates(true);
+			dummy->bOnlyRelevantToOwner = false;
 			if (const auto playerState = NewPlayer->GetPlayerState<ADSLobbyPlayerState>()) {
 				playerState->SetLobbyDummy(dummy);
 			}	

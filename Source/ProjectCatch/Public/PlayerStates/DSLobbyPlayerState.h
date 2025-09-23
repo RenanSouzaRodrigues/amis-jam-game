@@ -41,14 +41,13 @@ public:
 public:
 	UPROPERTY(ReplicatedUsing=OnRep_ChangePlayerName)
 	FText PlayerName { FText::FromString("Player Name") };
-	
-	UFUNCTION()
-	void OnRep_ChangePlayerName() const;
 
 	UFUNCTION(Server, Reliable)
 	void Server_ChangePlayerName(const FText& newName);
 	void Server_ChangePlayerName_Implementation(const FText& newName);
 
+	UFUNCTION()
+	void OnRep_ChangePlayerName() const;
 
 	
 	// ====================================================================
@@ -56,7 +55,7 @@ public:
 	// ====================================================================
 public:
 	UPROPERTY(ReplicatedUsing=OnRep_TogglePlayerReady)
-	bool PlayerIsReady { false };
+	bool PlayerIsReady;
 
 	UFUNCTION(Server, Reliable)
 	void Server_TogglePlayerReady(const bool value);
