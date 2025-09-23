@@ -25,8 +25,8 @@ void ADSLobbyGameMode::PostLogin(APlayerController* NewPlayer) {
 		int32 index = this->GameState->PlayerArray.Num() - 1;
 		if (index < 0) index = 0;
 
-		FVector spawnLocation = playerStarts[index]->GetActorLocation();
-		FRotator spawnRotation = playerStarts[index]->GetActorRotation();
+		const FVector spawnLocation = playerStarts[index]->GetActorLocation();
+		const FRotator spawnRotation = playerStarts[index]->GetActorRotation();
 
 		FActorSpawnParameters spawnParams;
 		spawnParams.Owner = NewPlayer;

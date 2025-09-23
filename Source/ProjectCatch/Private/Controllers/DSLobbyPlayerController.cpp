@@ -24,13 +24,15 @@ void ADSLobbyPlayerController::BeginPlay() {
 
 	if (this->IsLocalController()) {
 		if (this->HasAuthority()) {
-			this->LobbyWidgetInstance->SetUIForHost(true);
-			this->LobbyWidgetInstance->BuildWidget();
-			this->LobbyWidgetInstance->AddToViewport();
+			this->ConfigureControllerWidget(true);
 		} else {
-			this->LobbyWidgetInstance->SetUIForHost(false);
-			this->LobbyWidgetInstance->BuildWidget();
-			this->LobbyWidgetInstance->AddToViewport();
+			this->ConfigureControllerWidget(false);
 		}
 	}
+}
+
+void ADSLobbyPlayerController::ConfigureControllerWidget(const bool isHost) const {
+	if (isHost) this->LobbyWidgetInstance->SetUIForHost(true);
+	this->LobbyWidgetInstance->BuildWidget();
+	this->LobbyWidgetInstance->AddToViewport();
 }

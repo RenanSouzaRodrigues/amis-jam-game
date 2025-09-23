@@ -25,6 +25,8 @@ protected:
 	UPROPERTY(meta=(BindWidget))
 	UButton* ReturnButton;
 
+	
+
 private:
 	UPROPERTY()
 	bool IsHost { false };
