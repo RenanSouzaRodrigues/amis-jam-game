@@ -30,7 +30,7 @@ public:
 	// Player Name Replication
 public:
 	UPROPERTY(ReplicatedUsing=OnRep_ChangePlayerName)
-	FText PlayerName { FText::FromString("Player Name") };
+	FText PlayerName;
 	
 	UFUNCTION(Server, Reliable)
 	void Server_ChangePlayerName(const FText& newName);

@@ -26,12 +26,22 @@ void ADSLobbyPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 // Player Dummy
 void ADSLobbyPlayerState::SetLobbyDummy(ADSLobbyDummy* Dummy) {
 	this->LobbyDummy = Dummy;
+
+	if (this->HasAuthority()) {
+		this->Server_ChangePlayerName_Implementation(FText::FromString("Host"));
+		this->Server_CheckPlayerReady_Implementation();
+		return;
+	}
+
+	this->Server_ChangePlayerName_Implementation(FText::FromString("Client"));
+	this->Server_CheckPlayerReady_Implementation();
 }
 
 
 // Player Name
 void ADSLobbyPlayerState::Server_ChangePlayerName_Implementation(const FText& newName) {
 	this->PlayerName = newName;
+	if (this->HasAuthority()) this->OnRep_ChangePlayerName();
 }
 
 void ADSLobbyPlayerState::OnRep_ChangePlayerName() const {
@@ -44,10 +54,12 @@ void ADSLobbyPlayerState::OnRep_ChangePlayerName() const {
 // Player Confirmation
 void ADSLobbyPlayerState::Server_CheckPlayerReady_Implementation() {
 	this->PlayerIsReady = true;
+	if (this->HasAuthority()) this->OnRep_PlayerIsReady();
 }
 
 void ADSLobbyPlayerState::Server_UncheckPlayerReady_Implementation() {
 	this->PlayerIsReady = false;
+	if (this->HasAuthority()) this->OnRep_PlayerIsReady();
 }
 
 void ADSLobbyPlayerState::OnRep_PlayerIsReady() const {

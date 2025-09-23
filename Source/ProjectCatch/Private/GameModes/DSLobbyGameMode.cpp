@@ -31,7 +31,9 @@ void ADSLobbyGameMode::PostLogin(APlayerController* NewPlayer) {
 
 		const FVector spawnLocation = playerStarts[index]->GetActorLocation();
 		const FRotator spawnRotation = playerStarts[index]->GetActorRotation();
-		const FActorSpawnParameters spawnParams;
+		FActorSpawnParameters spawnParams;
+		spawnParams.Owner = NewPlayer;
+		spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
 		ADSLobbyDummy* dummy = this->GetWorld()->SpawnActor<ADSLobbyDummy>(this->PlayerDummyClass, spawnLocation, spawnRotation, spawnParams);
 
@@ -44,6 +46,7 @@ void ADSLobbyGameMode::PostLogin(APlayerController* NewPlayer) {
 		
 		if (!playerState) {
 			DS_LOG_ERROR("Game Mode Error: Player state is invalid or is not of type ADSLobbyPlayerState. Make sure to provide the correct Player State Class");
+			dummy->Destroy();
 			return;
 		}
 

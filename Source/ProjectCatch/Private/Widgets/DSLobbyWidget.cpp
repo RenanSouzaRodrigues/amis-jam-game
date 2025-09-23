@@ -106,6 +106,6 @@ void UDSLobbyWidget::OnChangePlayerName() {
 		DS_LOG_ERROR("Lobby player state refence is null on lobby widget");
 		return;
 	}
-
+	
 	this->LobbyPlayerStateReference->Server_ChangePlayerName(this->PlayerNameTextBox->GetText());
 }
