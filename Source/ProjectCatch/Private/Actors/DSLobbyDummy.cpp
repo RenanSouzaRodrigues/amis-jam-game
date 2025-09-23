@@ -28,7 +28,7 @@ ADSLobbyDummy::ADSLobbyDummy() {
 
 void ADSLobbyDummy::BeginPlay() {
 	Super::BeginPlay();
-	if (this->ConfirmationMesh) this->ConfirmationMesh->SetHiddenInGame(true);
+	if (this->ConfirmationMesh) this->ConfirmationMesh->SetHiddenInGame(false);
 }
 
 void ADSLobbyDummy::UpdatePlayerName(const FText& NewName) const {

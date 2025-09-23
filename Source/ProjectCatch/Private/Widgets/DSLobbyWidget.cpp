@@ -92,6 +92,8 @@ void UDSLobbyWidget::OnPlayerNotReady() {
 	DS_LOG_INFO("Client not ready to play");
 	if (this->LobbyPlayerStateReference) {
 		this->LobbyPlayerStateReference->Server_UncheckPlayerReady();
+		if (this->PlayerNotReadyButton) this->PlayerNotReadyButton->SetVisibility(ESlateVisibility::Collapsed);
+		if (this->PlayerReadyButton) this->PlayerReadyButton->SetVisibility(ESlateVisibility::Visible);
 	}
 }
 
