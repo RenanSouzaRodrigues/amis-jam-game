@@ -28,17 +28,10 @@ void ADSLobbyPlayerState::SetLobbyDummy(ADSLobbyDummy* Dummy) {
 	this->LobbyDummy = Dummy;
 
 	if (this->HasAuthority()) {
-		// No servidor, podemos alterar as propriedades diretamente
 		this->PlayerName = FText::FromString("Host");
-		this->PlayerIsReady = true;
-        
-		// Não esqueça de chamar os OnRep manualmente no servidor
 		OnRep_ChangePlayerName();
+		this->PlayerIsReady = true;
 		OnRep_PlayerIsReady();
-	} else {
-		// No cliente, fazemos as chamadas RPC
-		this->Server_ChangePlayerName(FText::FromString("Client"));
-		this->Server_UncheckPlayerReady();
 	}
 }
 
