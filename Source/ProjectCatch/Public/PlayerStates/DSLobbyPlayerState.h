@@ -63,5 +63,5 @@ public:
 	void Server_TogglePlayerReady_Implementation(const bool value);
 	
 	UFUNCTION()
-	void OnRep_TogglePlayerReady();
+	void OnRep_TogglePlayerReady() const;
 };

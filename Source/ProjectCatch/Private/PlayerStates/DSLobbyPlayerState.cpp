@@ -58,6 +58,7 @@ void ADSLobbyPlayerState::OnRep_ChangePlayerName() const {
 }
 
 
+
 // ====================================================================
 // Player Confirmation
 // ====================================================================
@@ -66,7 +67,7 @@ void ADSLobbyPlayerState::Server_TogglePlayerReady_Implementation(const bool val
 	if (this->HasAuthority()) this->OnRep_TogglePlayerReady();
 }
 
-void ADSLobbyPlayerState::OnRep_TogglePlayerReady() {
+void ADSLobbyPlayerState::OnRep_TogglePlayerReady() const {
 	if (this->LobbyDummy) {
 		this->LobbyDummy->TogglePlayerConfirmation();
 	}
