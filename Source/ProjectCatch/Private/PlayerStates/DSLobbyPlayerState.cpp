@@ -3,7 +3,6 @@
 #include "PlayerStates/DSLobbyPlayerState.h"
 #include "Actors/DSLobbyDummy.h"
 #include "Net/UnrealNetwork.h"
-#include "Utils/DSMacros.h"
 
 // ====================================================================
 // Unreal Lifecycle Methods
@@ -43,13 +42,11 @@ void ADSLobbyPlayerState::SetLobbyDummy(ADSLobbyDummy* Dummy) {
 // ====================================================================
 void ADSLobbyPlayerState::Server_ChangePlayerName_Implementation(const FText& newName) {
 	this->PlayerName = newName;
+	if (this->HasAuthority()) this->OnRep_ChangePlayerName();
 }
 
 void ADSLobbyPlayerState::OnRep_ChangePlayerName() const {
-	if (this->GetPlayerController()->IsLocalController()) {
-		DS_LOG_SUCCESS("Player name changed");
-		if (this->LobbyDummy) {
-			this->LobbyDummy->UpdatePlayerName(this->PlayerName);
-		}
+	if (this->LobbyDummy) {
+		this->LobbyDummy->UpdatePlayerName(this->PlayerName);
 	}
 }

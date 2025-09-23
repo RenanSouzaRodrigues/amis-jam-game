@@ -21,6 +21,6 @@ protected:
 	
 public:
 	virtual void BeginPlay() override;
-
 	void ConfigureControllerWidget(const bool isHost) const;
+	virtual void OnRep_PlayerState() override;
 };

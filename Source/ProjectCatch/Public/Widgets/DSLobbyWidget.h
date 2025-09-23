@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "DSLobbyWidget.generated.h"
 
+class ADSLobbyPlayerState;
+class UEditableTextBox;
 class UButton;
 
 UCLASS()
@@ -25,11 +27,19 @@ protected:
 	UPROPERTY(meta=(BindWidget))
 	UButton* ReturnButton;
 
+	UPROPERTY(meta=(BindWidget))
+	UEditableTextBox* PlayerNameTextBox;
+
+	UPROPERTY(meta=(BindWidget))
+	UButton* ChangeNameButton;
 	
 
 private:
 	UPROPERTY()
 	bool IsHost { false };
+
+	UPROPERTY()
+	ADSLobbyPlayerState* LobbyPlayerStateReference;
 
 protected:
 	virtual void NativeOnInitialized() override;
@@ -43,6 +53,10 @@ public:
 	void SetUIForHost(const bool Value);
 	void BuildWidget() const;
 
+public:
+	UFUNCTION()
+	void SetPlayerStateReference(ADSLobbyPlayerState* PlayerState);
+
 protected:
 	UFUNCTION()
 	void OnStartGame();
@@ -55,4 +69,7 @@ protected:
 
 	UFUNCTION()
 	void OnReturnToMainMenu();
+
+	UFUNCTION()
+	void OnChangePlayerName();
 };

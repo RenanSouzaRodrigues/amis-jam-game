@@ -21,7 +21,7 @@ public:
 	TObjectPtr<USkeletalMeshComponent> DummySkeletalMesh;
 	
 	UPROPERTY(EditAnywhere, Category="Actor Components")
-	TObjectPtr<UWidgetComponent> PlayerNameAndConfirmationWidget;
+	TObjectPtr<UWidgetComponent> PlayerNameWidget;
 
 	UPROPERTY(EditAnywhere, Category="Actor Components")
 	TObjectPtr<UStaticMeshComponent> ConfirmationMesh;
@@ -35,4 +35,7 @@ protected:
 public:
 	UFUNCTION()
 	void UpdatePlayerName(const FText& NewName) const;
+
+	UFUNCTION()
+	void TogglePlayerConfirmation();
 };

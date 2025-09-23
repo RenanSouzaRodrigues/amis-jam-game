@@ -2,6 +2,9 @@
 
 #include "Widgets/DSLobbyWidget.h"
 #include "Components/Button.h"
+#include "Components/EditableTextBox.h"
+#include "PlayerStates/DSLobbyPlayerState.h"
+#include "Utils/DSMacros.h"
 
 void UDSLobbyWidget::NativeOnInitialized() {
 	Super::NativeOnInitialized();
@@ -20,6 +23,10 @@ void UDSLobbyWidget::NativeOnInitialized() {
 
 	if (this->ReturnButton) {
 		this->ReturnButton->OnClicked.AddDynamic(this, &UDSLobbyWidget::OnReturnToMainMenu);
+	}
+
+	if (this->ChangeNameButton) {
+		this->ChangeNameButton->OnClicked.AddDynamic(this, &UDSLobbyWidget::OnChangePlayerName);
 	}
 }
 
@@ -55,18 +62,36 @@ void UDSLobbyWidget::BuildWidget() const {
 	this->DisplayClientButtons();
 }
 
+void UDSLobbyWidget::SetPlayerStateReference(ADSLobbyPlayerState* PlayerState) {
+	this->LobbyPlayerStateReference = PlayerState;
+}
+
 void UDSLobbyWidget::OnStartGame() {
-	
+	DS_LOG_INFO("Server Start Game");
 }
 
 void UDSLobbyWidget::OnCancelSession() {
-	
+	DS_LOG_INFO("Server Cancel Game");
 }
 
 void UDSLobbyWidget::OnPlayerReady() {
-	
+	DS_LOG_INFO("Client Ready to Play");
 }
 
 void UDSLobbyWidget::OnReturnToMainMenu() {
-	
+	DS_LOG_INFO("Client return to Main Menu");
+}
+
+void UDSLobbyWidget::OnChangePlayerName() {
+	if (!this->PlayerNameTextBox) {
+		DS_LOG_ERROR("Player name Text box is not defined");
+		return;
+	}
+
+	if (!this->LobbyPlayerStateReference) {
+		DS_LOG_ERROR("Lobby player state refence is null on lobby widget");
+		return;
+	}
+
+	this->LobbyPlayerStateReference->Server_ChangePlayerName(this->PlayerNameTextBox->GetText());
 }

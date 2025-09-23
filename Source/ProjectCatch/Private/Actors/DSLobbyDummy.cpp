@@ -17,8 +17,12 @@ ADSLobbyDummy::ADSLobbyDummy() {
 	this->DummySkeletalMesh = this->CreateDefaultSubobject<USkeletalMeshComponent>("Dummy Mesh");
 	this->DummySkeletalMesh->SetupAttachment(this->DummyCapsule);
 
-	this->PlayerNameAndConfirmationWidget = this->CreateDefaultSubobject<UWidgetComponent>("Player Name and Confirmation");
-	this->PlayerNameAndConfirmationWidget->SetupAttachment(this->DummyCapsule);
+	this->PlayerNameWidget = this->CreateDefaultSubobject<UWidgetComponent>("Player Name and Confirmation");
+	this->PlayerNameWidget->SetupAttachment(this->DummyCapsule);
+
+	this->ConfirmationMesh = this->CreateDefaultSubobject<UStaticMeshComponent>("Player Confirmation Mesh");
+	this->ConfirmationMesh->SetupAttachment(this->DummyCapsule);
+	this->ConfirmationMesh->SetHiddenInGame(true);
 }
 
 void ADSLobbyDummy::BeginPlay() {
@@ -26,9 +30,15 @@ void ADSLobbyDummy::BeginPlay() {
 }
 
 void ADSLobbyDummy::UpdatePlayerName(const FText& NewName) const {
-	if (const UDSPlayerNameWidget* widget = Cast<UDSPlayerNameWidget>(this->PlayerNameAndConfirmationWidget->GetWidget())) {
+	if (const UDSPlayerNameWidget* widget = Cast<UDSPlayerNameWidget>(this->PlayerNameWidget->GetWidget())) {
 		widget->ChangePlayerName(NewName);
 	} else {
 		DS_LOG_ERROR("Player Name Widget is not defined on the Lobby Dummy");
+	}
+}
+
+void ADSLobbyDummy::TogglePlayerConfirmation() {
+	if (this->ConfirmationMesh) {
+		this->ConfirmationMesh->SetHiddenInGame(!this->ConfirmationMesh->bHiddenInGame);
 	}
 }
