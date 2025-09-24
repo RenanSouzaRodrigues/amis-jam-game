@@ -4,6 +4,7 @@
 #include "Blueprint/UserWidget.h"
 #include "Utils/DSMacros.h"
 #include "Widgets/DSLobbyWidget.h"
+#include "PlayerStates/DSLobbyPlayerState.h"
 
 void ADSLobbyPlayerController::BeginPlay() {
 	Super::BeginPlay();
@@ -25,6 +26,14 @@ void ADSLobbyPlayerController::BeginPlay() {
 
 	if (this->HasAuthority()) {
 		this->ConfigureControllerWidget(true);
+		
+		ADSLobbyPlayerState* playerState = this->GetPlayerState<ADSLobbyPlayerState>();
+		playerState->Server_ChangePlayerName(FText::FromString("Host"));
+		playerState->Server_CheckPlayerReady();
+
+		this->OnRep_PlayerState();
+	} else {
+		this->ConfigureControllerWidget(false);
 	}
 }
 
@@ -45,5 +54,17 @@ void ADSLobbyPlayerController::ConfigureControllerWidget(const bool isHost) cons
 
 void ADSLobbyPlayerController::OnRep_PlayerState() {
 	Super::OnRep_PlayerState();
-	this->ConfigureControllerWidget(false);
+
+	if (!this->LobbyWidgetInstance) {
+		DS_LOG_ERROR("Lobby Player Controller Error: Lobby widget instance is invalid on player state RepNotify");
+		return;
+	}
+
+	ADSLobbyPlayerState* playerState = this->GetPlayerState<ADSLobbyPlayerState>();
+	if (!playerState) {
+		DS_LOG_ERROR("Lobby Player Controller Error: Player Instance is invalid or not of type ADSLobbyPlayerState");
+		return;
+	}
+	
+	this->LobbyWidgetInstance->SetPlayerStateReference(playerState);
 }

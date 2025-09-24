@@ -3,6 +3,7 @@
 #include "PlayerStates/DSLobbyPlayerState.h"
 #include "Actors/DSLobbyDummy.h"
 #include "Net/UnrealNetwork.h"
+#include "Utils/DSMacros.h"
 
 ADSLobbyPlayerState::ADSLobbyPlayerState() {
 	this->bReplicates = true;
@@ -25,16 +26,8 @@ void ADSLobbyPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 
 // Player Dummy
 void ADSLobbyPlayerState::SetLobbyDummy(ADSLobbyDummy* Dummy) {
-	this->LobbyDummy = Dummy;
-
-	if (this->HasAuthority()) {
-		this->PlayerName = FText::FromString("Host");
-		OnRep_ChangePlayerName();
-		this->PlayerIsReady = true;
-		OnRep_PlayerIsReady();
-	}
+	if (Dummy) this->LobbyDummy = Dummy;
 }
-
 
 // Player Name
 void ADSLobbyPlayerState::Server_ChangePlayerName_Implementation(const FText& newName) {

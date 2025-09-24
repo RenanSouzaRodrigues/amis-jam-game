@@ -25,7 +25,6 @@ public:
 	
 	UFUNCTION()
 	void SetLobbyDummy(ADSLobbyDummy* Dummy);
-
 	
 	// Player Name Replication
 public:
