@@ -23,4 +23,13 @@ public:
 	virtual void BeginPlay() override;
 	void ConfigureControllerWidget(const bool isHost) const;
 	virtual void OnRep_PlayerState() override;
+
+public:
+	void RequestLeaveLobby();
+
+	UFUNCTION(Server, Reliable)
+	void Server_RequestLeaveLobby();
+	void Server_RequestLeaveLobby_Implementation();
+
+	void DestroyDummyAndLeave() const;
 };

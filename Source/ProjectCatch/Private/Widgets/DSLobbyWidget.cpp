@@ -1,6 +1,8 @@
 // Made by Dallai Studios - 2025
 
 #include "Widgets/DSLobbyWidget.h"
+
+#include "Actors/DSLobbyDummy.h"
 #include "Components/Button.h"
 #include "Components/EditableTextBox.h"
 #include "PlayerStates/DSLobbyPlayerState.h"
@@ -104,6 +106,10 @@ void UDSLobbyWidget::OnReturnToMainMenu() {
 		if (controller->IsLocalController()) {
 			controller->ClientTravel(this->MainMenuLevelName, TRAVEL_Absolute);
 		}
+	}
+
+	if (this->LobbyPlayerStateReference) {
+		this->LobbyPlayerStateReference->LobbyDummy->Destroy();
 	}
 }
 

@@ -1,6 +1,8 @@
 // Made by Dallai Studios - 2025
 
 #include "Controllers/DSLobbyPlayerController.h"
+
+#include "Actors/DSLobbyDummy.h"
 #include "Blueprint/UserWidget.h"
 #include "Utils/DSMacros.h"
 #include "Widgets/DSLobbyWidget.h"
@@ -67,4 +69,19 @@ void ADSLobbyPlayerController::OnRep_PlayerState() {
 	}
 	
 	this->LobbyWidgetInstance->SetPlayerStateReference(playerState);
+}
+
+void ADSLobbyPlayerController::RequestLeaveLobby() {
+	if (this->HasAuthority()) {
+		
+	}
+}
+
+void ADSLobbyPlayerController::DestroyDummyAndLeave() const {
+	if (ADSLobbyPlayerState* playerState = this->GetPlayerState<ADSLobbyPlayerState>()) {
+		if (playerState->LobbyDummy) {
+			playerState->LobbyDummy->Destroy();
+			playerState->LobbyDummy = nullptr;
+		}
+	}
 }
