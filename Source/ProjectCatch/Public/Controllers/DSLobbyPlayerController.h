@@ -25,11 +25,11 @@ public:
 	virtual void OnRep_PlayerState() override;
 
 public:
-	void RequestLeaveLobby();
+	void RequestLeaveLobby(const FString& MainMenuLevelName);
 
 	UFUNCTION(Server, Reliable)
-	void Server_RequestLeaveLobby();
-	void Server_RequestLeaveLobby_Implementation();
+	void Server_RequestLeaveLobby(const FString& MainMenuLevelName);
+	void Server_RequestLeaveLobby_Implementation(const FString& MainMenuLevelName);
 
 	void DestroyDummyAndLeave() const;
 };

@@ -5,6 +5,7 @@
 #include "Actors/DSLobbyDummy.h"
 #include "Components/Button.h"
 #include "Components/EditableTextBox.h"
+#include "Controllers/DSLobbyPlayerController.h"
 #include "PlayerStates/DSLobbyPlayerState.h"
 #include "Utils/DSMacros.h"
 
@@ -102,14 +103,8 @@ void UDSLobbyWidget::OnPlayerNotReady() {
 void UDSLobbyWidget::OnReturnToMainMenu() {
 	DS_LOG_INFO("Client return to Main Menu");
 
-	if (APlayerController* controller = this->GetOwningPlayer()) {
-		if (controller->IsLocalController()) {
-			controller->ClientTravel(this->MainMenuLevelName, TRAVEL_Absolute);
-		}
-	}
-
-	if (this->LobbyPlayerStateReference) {
-		this->LobbyPlayerStateReference->LobbyDummy->Destroy();
+	if (const ADSLobbyPlayerController* playerController = Cast<ADSLobbyPlayerController>(this->GetOwningPlayer())) {
+		playerController->DestroyDummyAndLeave();
 	}
 }
 

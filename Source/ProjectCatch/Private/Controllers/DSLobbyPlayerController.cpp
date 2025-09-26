@@ -71,10 +71,18 @@ void ADSLobbyPlayerController::OnRep_PlayerState() {
 	this->LobbyWidgetInstance->SetPlayerStateReference(playerState);
 }
 
-void ADSLobbyPlayerController::RequestLeaveLobby() {
+void ADSLobbyPlayerController::RequestLeaveLobby(const FString& MainMenuLevelName) {
 	if (this->HasAuthority()) {
-		
+		this->DestroyDummyAndLeave();
+		this->ClientTravel(MainMenuLevelName, TRAVEL_Absolute);
+	} else {
+		this->Server_RequestLeaveLobby(MainMenuLevelName);
 	}
+}
+
+void ADSLobbyPlayerController::Server_RequestLeaveLobby_Implementation(const FString& MainMenuLevelName) {
+	this->DestroyDummyAndLeave();
+	this->ClientTravel(MainMenuLevelName, TRAVEL_Absolute);
 }
 
 void ADSLobbyPlayerController::DestroyDummyAndLeave() const {
