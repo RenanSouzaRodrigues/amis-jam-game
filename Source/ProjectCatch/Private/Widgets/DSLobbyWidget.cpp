@@ -48,7 +48,7 @@ void UDSLobbyWidget::DisplayHostButtons() const {
 }
 
 void UDSLobbyWidget::DisplayClientButtons() const {
-	if (this->PlayerReadyButton) this->PlayerReadyButton->SetVisibility(ESlateVisibility::Visible);
+	if (this->PlayerNotReadyButton) this->PlayerNotReadyButton->SetVisibility(ESlateVisibility::Visible);
 	if (this->ReturnButton) this->ReturnButton->SetVisibility(ESlateVisibility::Visible);
 }
 
@@ -99,6 +99,12 @@ void UDSLobbyWidget::OnPlayerNotReady() {
 
 void UDSLobbyWidget::OnReturnToMainMenu() {
 	DS_LOG_INFO("Client return to Main Menu");
+
+	if (APlayerController* controller = this->GetOwningPlayer()) {
+		if (controller->IsLocalController()) {
+			controller->ClientTravel(this->MainMenuLevelName, TRAVEL_Absolute);
+		}
+	}
 }
 
 void UDSLobbyWidget::OnChangePlayerName() {

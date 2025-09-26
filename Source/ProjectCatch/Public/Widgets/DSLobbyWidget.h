@@ -35,6 +35,13 @@ protected:
 
 	UPROPERTY(meta=(BindWidget))
 	UButton* ChangeNameButton;
+
+public:
+	UPROPERTY(EditAnywhere, Category="Actor Properties")
+	FString MainMenuLevelName { "/Game/Levels/Level_MainMenu" };
+
+	UPROPERTY(EditAnywhere, Category="Actor Properties")
+	FString GameLevelName { "/Game/Levels/Level_Game" };
 	
 
 private:

@@ -24,7 +24,7 @@ void ADSLobbyPlayerController::BeginPlay() {
 		return;
 	}
 
-	if (this->HasAuthority()) {
+	if (this->IsLocalPlayerController() && this->HasAuthority()) {
 		this->ConfigureControllerWidget(true);
 		
 		ADSLobbyPlayerState* playerState = this->GetPlayerState<ADSLobbyPlayerState>();
