@@ -6,6 +6,9 @@
 #include "Components/Button.h"
 #include "Components/EditableTextBox.h"
 #include "Controllers/DSLobbyPlayerController.h"
+#include "GameInstance/DSGameInstance.h"
+#include "GameModes/DSLobbyGameMode.h"
+#include "Kismet/GameplayStatics.h"
 #include "PlayerStates/DSLobbyPlayerState.h"
 #include "Utils/DSMacros.h"
 
@@ -80,6 +83,9 @@ void UDSLobbyWidget::OnStartGame() {
 
 void UDSLobbyWidget::OnCancelSession() {
 	DS_LOG_SUCCESS("Server Cancel Game");
+
+	ADSLobbyGameMode* gameMode = Cast<ADSLobbyGameMode>(UGameplayStatics::GetGameMode(this->GetWorld()));
+	gameMode->ReturnAllClientsToMainMenuLevel();
 }
 
 void UDSLobbyWidget::OnPlayerReady() {

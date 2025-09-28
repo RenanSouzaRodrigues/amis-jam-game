@@ -2,9 +2,10 @@
 
 
 #include "GameInstance/DSGameInstance.h"
-
 #include "Kismet/GameplayStatics.h"
 #include "Utils/DSMacros.h"
+#include "OnlineSubsystem.h"
+#include "Interfaces/OnlineSessionInterface.h"
 
 void UDSGameInstance::HostGame() const {
 	DS_LOG_INFO("Hosting Game");
@@ -18,4 +19,26 @@ void UDSGameInstance::JoinGame(const FString& ServerAddress) const {
 	if (APlayerController* localPlayerController = this->GetFirstLocalPlayerController()) {
 		localPlayerController->ClientTravel(ServerAddress, ETravelType::TRAVEL_Absolute);
 	}
+}
+
+void UDSGameInstance::DestroySessionAndReturn() {
+	const IOnlineSubsystem* onlineSubsystem = IOnlineSubsystem::Get();
+	if (!onlineSubsystem) {
+		DS_LOG_ERROR("Game Instance Error: OnlineSubsystem is invalid");
+		return;
+	}
+
+	const IOnlineSessionPtr sessionInterface = onlineSubsystem->GetSessionInterface();
+	if (!sessionInterface.IsValid()) {
+		DS_LOG_ERROR("Game Instance Error: Session Interface is invalid");
+		return;
+	}
+
+	sessionInterface->OnDestroySessionCompleteDelegates.AddUObject(this, &UDSGameInstance::SessionDestructionComplete_EventListener);
+	sessionInterface->DestroySession(NAME_GameSession);
+	sessionInterface->ClearOnDestroySessionCompleteDelegates(this);
+}
+
+void UDSGameInstance::SessionDestructionComplete_EventListener(FName SessionName, bool bWasSuccessfull) const {
+	UGameplayStatics::OpenLevel(this->GetWorld(), this->MainMenuLevelName);
 }

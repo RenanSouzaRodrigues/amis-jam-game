@@ -2,8 +2,10 @@
 
 #include "GameModes/DSLobbyGameMode.h"
 #include "Actors/DSLobbyDummy.h"
+#include "Controllers/DSLobbyPlayerController.h"
 #include "GameFramework/GameStateBase.h"
 #include "GameFramework/PlayerStart.h"
+#include "GameInstance/DSGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "PlayerStates/DSLobbyPlayerState.h"
 #include "Utils/DSMacros.h"
@@ -52,4 +54,9 @@ void ADSLobbyGameMode::PostLogin(APlayerController* NewPlayer) {
 
 		playerState->SetLobbyDummy(dummy);
 	}
+}
+
+void ADSLobbyGameMode::ReturnAllClientsToMainMenuLevel() const {
+	UDSGameInstance* gameInstance = Cast<UDSGameInstance>(this->GetGameInstance());
+	gameInstance->DestroySessionAndReturn();
 }
