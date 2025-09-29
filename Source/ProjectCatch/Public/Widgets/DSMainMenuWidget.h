@@ -102,6 +102,9 @@ public:
 	void OnHostGame();
 
 	UFUNCTION()
+	void OpenJoinGameMenu();
+	
+	UFUNCTION()
 	void OnJoinGame();
 
 	UFUNCTION()
@@ -140,5 +143,6 @@ public:
 private:
 	void HideAllElements() const;
 	void ShowMainMenu() const;
+	void ShowJoinGameMenu() const;
 	void ShowOptionsMenu() const;
 };

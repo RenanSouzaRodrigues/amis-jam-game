@@ -12,11 +12,13 @@
 
 void UDSMainMenuWidget::NativeOnInitialized() {
 	Super::NativeOnInitialized();
+
+	this->HideAllElements();
 	
 	// Main Menu Buttons. -Dallai
 	if (this->HostGameButton && this->JoinGameButton && this->OptionsButton && this->QuitButton) {
 		this->HostGameButton->OnClicked.AddDynamic(this, &UDSMainMenuWidget::OnHostGame);
-		this->JoinGameButton->OnClicked.AddDynamic(this, &UDSMainMenuWidget::OnJoinGame);
+		this->JoinGameButton->OnClicked.AddDynamic(this, &UDSMainMenuWidget::OpenJoinGameMenu);
 		this->OptionsButton->OnClicked.AddDynamic(this, &UDSMainMenuWidget::OnOptions);
 		this->QuitButton->OnClicked.AddDynamic(this, &UDSMainMenuWidget::OnQuit);
 	}
@@ -38,7 +40,6 @@ void UDSMainMenuWidget::NativeOnInitialized() {
 		this->ReturnFromOptionsButton->OnClicked.AddDynamic(this, &ThisClass::ReturnToMainMenu);
 	}
 	
-	this->HideAllElements();
 	this->ShowMainMenu();
 }
 
@@ -48,6 +49,11 @@ void UDSMainMenuWidget::OnHostGame() {
 	} else {
 		DS_LOG_ERROR("Host game error: Fail to retrieve game instance in order to host the game. Make sure the default game instance is of type UDSGameInstance");
 	}
+}
+
+void UDSMainMenuWidget::OpenJoinGameMenu() {
+	this->HideAllElements();
+	this->ShowJoinGameMenu();
 }
 
 void UDSMainMenuWidget::OnJoinGame() {
@@ -81,7 +87,7 @@ void UDSMainMenuWidget::ToggleVSync() { }
 
 void UDSMainMenuWidget::ChangeVideoQuality() { }
 
-void UDSMainMenuWidget::ApplySettings() {}
+void UDSMainMenuWidget::ApplySettings() { }
 
 void UDSMainMenuWidget::ReturnToMainMenu() {
 	this->HideAllElements();
@@ -118,6 +124,16 @@ void UDSMainMenuWidget::ShowMainMenu() const {
 	this->FirstTitleLabel->SetVisibility(ESlateVisibility::Visible);
 	this->SecondTitleLabel->SetVisibility(ESlateVisibility::Visible);
 	this->MainMenuButtonsContainer->SetVisibility(ESlateVisibility::Visible);
+}
+
+void UDSMainMenuWidget::ShowJoinGameMenu() const {
+	this->JoinGameBackgroundImage->SetVisibility(ESlateVisibility::Visible);
+	this->JoinGameBackgroundShadowImage->SetVisibility(ESlateVisibility::Visible);
+	this->FirstJoinGamePumpkin->SetVisibility(ESlateVisibility::Visible);
+	this->SecondJoinGamePumpkin->SetVisibility(ESlateVisibility::Visible);
+	this->JoinGameAddressMessage->SetVisibility(ESlateVisibility::Visible);
+	this->HostAddressText->SetVisibility(ESlateVisibility::Visible);
+	this->ConfirmJoinButton->SetVisibility(ESlateVisibility::Visible);
 }
 
 void UDSMainMenuWidget::ShowOptionsMenu() const {
