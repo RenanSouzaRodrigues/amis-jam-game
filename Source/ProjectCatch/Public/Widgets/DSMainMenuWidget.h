@@ -4,8 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/Image.h"
 #include "DSMainMenuWidget.generated.h"
 
+class UTextBlock;
+class UVerticalBox;
 class UEditableTextBox;
 class UButton;
 class USlider;
@@ -15,7 +18,23 @@ class PROJECTCATCH_API UDSMainMenuWidget : public UUserWidget {
 	GENERATED_BODY()
 
 public:
-	// Main Menu
+	// Game Title. -Dallai
+	UPROPERTY(meta=(BindWidget))
+	UImage* FirstPumpkinImage;
+
+	UPROPERTY(meta=(BindWidget))
+	UImage* SecondPumpkinImage;
+
+	UPROPERTY(meta=(BindWidget))
+	UTextBlock* FirstTitleLabel;
+
+	UPROPERTY(meta=(BindWidget))
+	UTextBlock* SecondTitleLabel;
+
+	// Main Menu Buttons. -Dallai
+	UPROPERTY(meta=(BindWidget))
+	UVerticalBox* MainMenuButtonsContainer;
+	
 	UPROPERTY(meta=(BindWidget))
 	UButton* HostGameButton;
 
@@ -37,6 +56,15 @@ public:
 	
 	// Options Configs;
 	UPROPERTY(meta=(BindWidget))
+	UImage* OptionsBackgroundImage;
+
+	UPROPERTY(meta=(BindWidget))
+	UTextBlock* OptionsTextLabel;
+	
+	UPROPERTY(meta=(BindWidget))
+	UVerticalBox* OptionsMenuSettingsContainer;
+	
+	UPROPERTY(meta=(BindWidget))
 	USlider* MasterVolumeSlider;
 
 	UPROPERTY(meta=(BindWidget))
@@ -44,7 +72,6 @@ public:
 
 	UPROPERTY(meta=(BindWidget))
 	USlider* SfxVolumeSlider;
-
 
 public:
 	virtual void NativeOnInitialized() override;
@@ -57,14 +84,34 @@ public:
 	void OnJoinGame();
 
 	UFUNCTION()
+	void OnOptions();
+	
+	UFUNCTION()
 	void OnQuit();
 
 	UFUNCTION()
-	void ChangeMasterVolume();
+	void ChangeMasterVolume(const float Value);
 
 	UFUNCTION()
-	void ChangeMusiceVolume();
+	void ChangeMusicVolume(const float Value);
 
 	UFUNCTION()
-	void ChangeSfxVolume();
+	void ChangeSfxVolume(const float Value);
+
+	UFUNCTION()
+	void ChangeScreenResolution();
+
+	UFUNCTION()
+	void ToggleVSync();
+
+	UFUNCTION()
+	void ChangeFrameRate();
+
+	UFUNCTION()
+	void ChangeVideoQuality();
+
+private:
+	void HideAllElements() const;
+	void ShowMainMenu() const;
+	void ShowOptionsMenu() const;
 };
