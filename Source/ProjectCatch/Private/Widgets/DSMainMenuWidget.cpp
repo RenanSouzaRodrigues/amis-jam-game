@@ -2,6 +2,7 @@
 
 #include "Widgets/DSMainMenuWidget.h"
 #include "Components/Button.h"
+#include "Components/EditableTextBox.h"
 #include "Components/Slider.h"
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
@@ -20,6 +21,11 @@ void UDSMainMenuWidget::NativeOnInitialized() {
 		this->QuitButton->OnClicked.AddDynamic(this, &UDSMainMenuWidget::OnQuit);
 	}
 
+	// Join Game Confirm Button. -Dallai
+	if (this->ConfirmJoinButton) {
+		this->ConfirmJoinButton->OnClicked.AddDynamic(this, &ThisClass::UDSMainMenuWidget::OnJoinGame);
+	}
+	
 	// Volume Options. -Dallai;
 	if (this->MasterVolumeSlider && this->MusicVolumeSlider && this->SfxVolumeSlider) {
 		this->MusicVolumeSlider->OnValueChanged.AddDynamic(this, &ThisClass::UDSMainMenuWidget::ChangeMusicVolume);
@@ -27,6 +33,11 @@ void UDSMainMenuWidget::NativeOnInitialized() {
 		this->SfxVolumeSlider->OnValueChanged.AddDynamic(this, &ThisClass::ChangeSfxVolume);
 	}
 
+	if (this->ApplySettingsButton && this->ReturnFromOptionsButton) {
+		this->ApplySettingsButton->OnClicked.AddDynamic(this, &ThisClass::ApplySettings);
+		this->ReturnFromOptionsButton->OnClicked.AddDynamic(this, &ThisClass::ReturnToMainMenu);
+	}
+	
 	this->HideAllElements();
 	this->ShowMainMenu();
 }
@@ -70,14 +81,31 @@ void UDSMainMenuWidget::ToggleVSync() { }
 
 void UDSMainMenuWidget::ChangeVideoQuality() { }
 
+void UDSMainMenuWidget::ApplySettings() {}
+
+void UDSMainMenuWidget::ReturnToMainMenu() {
+	this->HideAllElements();
+	this->ShowMainMenu();
+}
+
+
 void UDSMainMenuWidget::HideAllElements() const {
-	// Disable all the Main Menu Elements first. - Dallai
+	// Disable all the Main Menu Elements first. -Dallai
 	this->FirstPumpkinImage->SetVisibility(ESlateVisibility::Collapsed);
 	this->SecondPumpkinImage->SetVisibility(ESlateVisibility::Collapsed);
 	this->FirstTitleLabel->SetVisibility(ESlateVisibility::Collapsed);
 	this->SecondTitleLabel->SetVisibility(ESlateVisibility::Collapsed);
 	this->MainMenuButtonsContainer->SetVisibility(ESlateVisibility::Collapsed);
 
+	// Disable all the Join Game Screen. -Dallai
+	this->JoinGameBackgroundImage->SetVisibility(ESlateVisibility::Collapsed);
+	this->JoinGameBackgroundShadowImage->SetVisibility(ESlateVisibility::Collapsed);
+	this->FirstJoinGamePumpkin->SetVisibility(ESlateVisibility::Collapsed);
+	this->SecondJoinGamePumpkin->SetVisibility(ESlateVisibility::Collapsed);
+	this->JoinGameAddressMessage->SetVisibility(ESlateVisibility::Collapsed);
+	this->HostAddressText->SetVisibility(ESlateVisibility::Collapsed);
+	this->ConfirmJoinButton->SetVisibility(ESlateVisibility::Collapsed);
+	
 	// Disable the options elements. -Dallai
 	this->OptionsBackgroundImage->SetVisibility(ESlateVisibility::Collapsed);
 	this->OptionsTextLabel->SetVisibility(ESlateVisibility::Collapsed);
@@ -90,7 +118,6 @@ void UDSMainMenuWidget::ShowMainMenu() const {
 	this->FirstTitleLabel->SetVisibility(ESlateVisibility::Visible);
 	this->SecondTitleLabel->SetVisibility(ESlateVisibility::Visible);
 	this->MainMenuButtonsContainer->SetVisibility(ESlateVisibility::Visible);
-	
 }
 
 void UDSMainMenuWidget::ShowOptionsMenu() const {

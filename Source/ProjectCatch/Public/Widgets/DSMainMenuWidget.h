@@ -49,6 +49,21 @@ public:
 
 	// Join Game
 	UPROPERTY(meta=(BindWidget))
+	UImage* JoinGameBackgroundImage;
+
+	UPROPERTY(meta=(BindWidget))
+	UImage* JoinGameBackgroundShadowImage;
+
+	UPROPERTY(meta=(BindWidget))
+	UImage* FirstJoinGamePumpkin;
+
+	UPROPERTY(meta=(BindWidget))
+	UImage* SecondJoinGamePumpkin;
+
+	UPROPERTY(meta=(BindWidget))
+	UTextBlock* JoinGameAddressMessage;
+	
+	UPROPERTY(meta=(BindWidget))
 	UEditableTextBox* HostAddressText;
 
 	UPROPERTY(meta=(BindWidget))
@@ -72,6 +87,12 @@ public:
 
 	UPROPERTY(meta=(BindWidget))
 	USlider* SfxVolumeSlider;
+
+	UPROPERTY(meta=(BindWidget))
+	UButton* ApplySettingsButton;
+
+	UPROPERTY(meta=(BindWidget))
+	UButton* ReturnFromOptionsButton;
 
 public:
 	virtual void NativeOnInitialized() override;
@@ -109,6 +130,12 @@ public:
 
 	UFUNCTION()
 	void ChangeVideoQuality();
+
+	UFUNCTION()
+	void ApplySettings();
+
+	UFUNCTION()
+	void ReturnToMainMenu();
 
 private:
 	void HideAllElements() const;
