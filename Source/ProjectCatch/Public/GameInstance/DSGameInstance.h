@@ -22,11 +22,23 @@ public:
 
 	UPROPERTY(EditAnywhere, Category="Game Instance Properties")
 	TObjectPtr<USoundMix> GameSoundMixer;
+
+	UPROPERTY(EditAnywhere, Category="Game Instance Properties")
+	TObjectPtr<USoundClass> MasterSoundClass;
+
+	UPROPERTY(EditAnywhere, Category="Game Instance Properties")
+	TObjectPtr<USoundClass> MusicSoundClass;
+
+	UPROPERTY(EditAnywhere, Category="Game Instance Properties")
+	TObjectPtr<USoundClass> SfxSoundClass;
 	
 private:
 	UPROPERTY()
 	UDSGameUserSettings* UserSettings;
 
+public:
+	virtual void Init() override;
+	
 public:
     UFUNCTION(BlueprintCallable, Category="Online Features")
     void HostGame() const;

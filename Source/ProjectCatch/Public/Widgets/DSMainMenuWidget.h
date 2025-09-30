@@ -31,6 +31,9 @@ public:
 	UPROPERTY(meta=(BindWidget))
 	UTextBlock* SecondTitleLabel;
 
+	UPROPERTY(meta=(BindWidget))
+	UTextBlock* SecondTitleShadowLabel;
+
 	// Main Menu Buttons. -Dallai
 	UPROPERTY(meta=(BindWidget))
 	UVerticalBox* MainMenuButtonsContainer;

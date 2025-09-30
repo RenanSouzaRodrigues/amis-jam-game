@@ -1,11 +1,28 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "GameInstance/DSGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "Utils/DSMacros.h"
 #include "OnlineSubsystem.h"
+#include "Data/DSGameUserSettings.h"
 #include "Interfaces/OnlineSessionInterface.h"
+
+void UDSGameInstance::Init() {
+	Super::Init();
+
+	if (!this->GameSoundMixer || !this->MasterSoundClass || !this->MusicSoundClass || !this->SfxSoundClass) {
+		DS_LOG_ERROR("Game Instance Error: Sound Config is not defined");
+		return;
+	}
+	
+	this->UserSettings = Cast<UDSGameUserSettings>(GEngine->GetGameUserSettings());
+	if (!this->UserSettings) {
+		DS_LOG_ERROR("Game Instance Error: Game User Settings is not defined or is not of type UDSGameUserSettings");
+		return;
+	}
+
+	this->UserSettings->LoadSettings();
+}
 
 void UDSGameInstance::HostGame() const {
 	DS_LOG_INFO("Hosting Game");
