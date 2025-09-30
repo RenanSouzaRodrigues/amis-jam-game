@@ -39,6 +39,10 @@ void UDSGameInstance::DestroySessionAndReturn() {
 	sessionInterface->ClearOnDestroySessionCompleteDelegates(this);
 }
 
+UDSGameUserSettings* UDSGameInstance::GetUserSettings() const {
+	return this->UserSettings;
+}
+
 void UDSGameInstance::SessionDestructionComplete_EventListener(FName SessionName, bool bWasSuccessfull) const {
 	UGameplayStatics::OpenLevel(this->GetWorld(), this->MainMenuLevelName);
 }

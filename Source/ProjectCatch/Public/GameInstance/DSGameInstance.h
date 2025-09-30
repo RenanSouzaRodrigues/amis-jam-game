@@ -6,6 +6,8 @@
 #include "Engine/GameInstance.h"
 #include "DSGameInstance.generated.h"
 
+class UDSGameUserSettings;
+
 UCLASS()
 class PROJECTCATCH_API UDSGameInstance : public UGameInstance
 {
@@ -18,6 +20,13 @@ public:
 	UPROPERTY(EditAnywhere, Category="Game Instance Properties")
 	FName MainMenuLevelName { FName("Level_MainMenu") };
 
+	UPROPERTY(EditAnywhere, Category="Game Instance Properties")
+	TObjectPtr<USoundMix> GameSoundMixer;
+	
+private:
+	UPROPERTY()
+	UDSGameUserSettings* UserSettings;
+
 public:
     UFUNCTION(BlueprintCallable, Category="Online Features")
     void HostGame() const;
@@ -28,6 +37,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category="Online Feature")
 	void DestroySessionAndReturn();
 
+	UFUNCTION()
+	UDSGameUserSettings* GetUserSettings() const;
+	
 private:
 	void SessionDestructionComplete_EventListener(FName SessionName, bool bWasSuccessfull) const;
 };
