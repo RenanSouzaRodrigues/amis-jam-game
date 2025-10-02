@@ -29,16 +29,16 @@ void UDSMainMenuWidget::NativeOnInitialized() {
 	}
 	
 	// Volume Options. -Dallai;
-	if (this->MasterVolumeSlider && this->MusicVolumeSlider && this->SfxVolumeSlider) {
-		this->MusicVolumeSlider->OnValueChanged.AddDynamic(this, &ThisClass::UDSMainMenuWidget::ChangeMusicVolume);
-		this->MasterVolumeSlider->OnValueChanged.AddDynamic(this, &ThisClass::ChangeMasterVolume);
-		this->SfxVolumeSlider->OnValueChanged.AddDynamic(this, &ThisClass::ChangeSfxVolume);
-	}
-
-	if (this->ApplySettingsButton && this->ReturnFromOptionsButton) {
-		this->ApplySettingsButton->OnClicked.AddDynamic(this, &ThisClass::ApplySettings);
-		this->ReturnFromOptionsButton->OnClicked.AddDynamic(this, &ThisClass::ReturnToMainMenu);
-	}
+	// if (this->MasterVolumeSlider && this->MusicVolumeSlider && this->SfxVolumeSlider) {
+	// 	this->MusicVolumeSlider->OnValueChanged.AddDynamic(this, &ThisClass::UDSMainMenuWidget::ChangeMusicVolume);
+	// 	this->MasterVolumeSlider->OnValueChanged.AddDynamic(this, &ThisClass::ChangeMasterVolume);
+	// 	this->SfxVolumeSlider->OnValueChanged.AddDynamic(this, &ThisClass::ChangeSfxVolume);
+	// }
+	//
+	// if (this->ApplySettingsButton && this->ReturnFromOptionsButton) {
+	// 	this->ApplySettingsButton->OnClicked.AddDynamic(this, &ThisClass::ApplySettings);
+	// 	this->ReturnFromOptionsButton->OnClicked.AddDynamic(this, &ThisClass::ReturnToMainMenu);
+	// }
 	
 	this->ShowMainMenu();
 }
@@ -57,8 +57,15 @@ void UDSMainMenuWidget::OpenJoinGameMenu() {
 }
 
 void UDSMainMenuWidget::OnJoinGame() {
+	const auto serverAddress = this->HostAddressText->GetText();
+
+	if (serverAddress.IsEmpty()) {
+		DS_LOG_ERROR("Host address is empty");
+		return;
+	}
+	
 	if (const auto gameInstance = Cast<UDSGameInstance>(this->GetGameInstance())) {
-		gameInstance->JoinGame("127.0.0.1");
+		gameInstance->JoinGame(serverAddress.ToString());
 	} else {
 		DS_LOG_ERROR("Join game error: Fail to retrieve game instance in order to host the game. Make sure the default game instance is of type UDSGameInstance");
 	}
@@ -113,10 +120,10 @@ void UDSMainMenuWidget::HideAllElements() const {
 	this->HostAddressText->SetVisibility(ESlateVisibility::Collapsed);
 	this->ConfirmJoinButton->SetVisibility(ESlateVisibility::Collapsed);
 	
-	// Disable the options elements. -Dallai
-	this->OptionsBackgroundImage->SetVisibility(ESlateVisibility::Collapsed);
-	this->OptionsTextLabel->SetVisibility(ESlateVisibility::Collapsed);
-	this->OptionsMenuSettingsContainer->SetVisibility(ESlateVisibility::Collapsed);
+	// Disable the option elements. -Dallai
+	// this->OptionsBackgroundImage->SetVisibility(ESlateVisibility::Collapsed);
+	// this->OptionsTextLabel->SetVisibility(ESlateVisibility::Collapsed);
+	// this->OptionsMenuSettingsContainer->SetVisibility(ESlateVisibility::Collapsed);
 }
 
 void UDSMainMenuWidget::ShowMainMenu() const {
@@ -139,7 +146,7 @@ void UDSMainMenuWidget::ShowJoinGameMenu() const {
 }
 
 void UDSMainMenuWidget::ShowOptionsMenu() const {
-	this->OptionsBackgroundImage->SetVisibility(ESlateVisibility::Visible);
-	this->OptionsTextLabel->SetVisibility(ESlateVisibility::Visible);
-	this->OptionsMenuSettingsContainer->SetVisibility(ESlateVisibility::Visible);
+	// this->OptionsBackgroundImage->SetVisibility(ESlateVisibility::Visible);
+	// this->OptionsTextLabel->SetVisibility(ESlateVisibility::Visible);
+	// this->OptionsMenuSettingsContainer->SetVisibility(ESlateVisibility::Visible);
 }

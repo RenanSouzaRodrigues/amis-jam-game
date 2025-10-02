@@ -73,29 +73,29 @@ public:
 	UButton* ConfirmJoinButton;
 	
 	// Options Configs;
-	UPROPERTY(meta=(BindWidget))
-	UImage* OptionsBackgroundImage;
-
-	UPROPERTY(meta=(BindWidget))
-	UTextBlock* OptionsTextLabel;
-	
-	UPROPERTY(meta=(BindWidget))
-	UVerticalBox* OptionsMenuSettingsContainer;
-	
-	UPROPERTY(meta=(BindWidget))
-	USlider* MasterVolumeSlider;
-
-	UPROPERTY(meta=(BindWidget))
-	USlider* MusicVolumeSlider;
-
-	UPROPERTY(meta=(BindWidget))
-	USlider* SfxVolumeSlider;
-
-	UPROPERTY(meta=(BindWidget))
-	UButton* ApplySettingsButton;
-
-	UPROPERTY(meta=(BindWidget))
-	UButton* ReturnFromOptionsButton;
+	// UPROPERTY(meta=(BindWidget))
+	// UImage* OptionsBackgroundImage;
+	//
+	// UPROPERTY(meta=(BindWidget))
+	// UTextBlock* OptionsTextLabel;
+	//
+	// UPROPERTY(meta=(BindWidget))
+	// UVerticalBox* OptionsMenuSettingsContainer;
+	//
+	// UPROPERTY(meta=(BindWidget))
+	// USlider* MasterVolumeSlider;
+	//
+	// UPROPERTY(meta=(BindWidget))
+	// USlider* MusicVolumeSlider;
+	//
+	// UPROPERTY(meta=(BindWidget))
+	// USlider* SfxVolumeSlider;
+	//
+	// UPROPERTY(meta=(BindWidget))
+	// UButton* ApplySettingsButton;
+	//
+	// UPROPERTY(meta=(BindWidget))
+	// UButton* ReturnFromOptionsButton;
 
 public:
 	virtual void NativeOnInitialized() override;
