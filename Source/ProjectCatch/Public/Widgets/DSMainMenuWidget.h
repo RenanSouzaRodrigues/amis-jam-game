@@ -146,9 +146,6 @@ public:
 	UFUNCTION()
 	void ApplySettings();
 
-	UFUNCTION()
-	void ReturnToMainMenu();
-
 private:
 	void HideAllElements() const;
 	void ShowMainMenu() const;

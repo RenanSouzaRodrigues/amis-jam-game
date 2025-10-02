@@ -24,7 +24,7 @@ void UDSMainMenuWidget::NativeOnInitialized() {
 	// Join Game Confirm Button. -Dallai
 	if (this->ConfirmJoinButton && this->CancelJoinButton) {
 		this->ConfirmJoinButton->OnClicked.AddDynamic(this, &UDSMainMenuWidget::OnJoinGame);
-		this->ConfirmJoinButton->OnClicked.AddDynamic(this, &UDSMainMenuWidget::OnCancelJoinGame);
+		this->CancelJoinButton->OnClicked.AddDynamic(this, &UDSMainMenuWidget::OnCancelJoinGame);
 	}
 	
 	// Volume Options. -Dallai;
@@ -52,7 +52,6 @@ void UDSMainMenuWidget::OnHostGame() {
 }
 
 void UDSMainMenuWidget::OpenJoinGameMenu() {
-	DS_LOG_ERROR("Test");
 	this->HideAllElements();
 	this->ShowJoinGameMenu();
 }
@@ -105,11 +104,6 @@ void UDSMainMenuWidget::ToggleVSync() { }
 void UDSMainMenuWidget::ChangeVideoQuality() { }
 
 void UDSMainMenuWidget::ApplySettings() { }
-
-void UDSMainMenuWidget::ReturnToMainMenu() {
-	this->HideAllElements();
-	this->ShowMainMenu();
-}
 
 void UDSMainMenuWidget::HideAllElements() const {
 	// Disable all the Main Menu Elements first. -Dallai
