@@ -12,8 +12,6 @@
 
 void UDSMainMenuWidget::NativeOnInitialized() {
 	Super::NativeOnInitialized();
-
-	this->HideAllElements();
 	
 	// Main Menu Buttons. -Dallai
 	if (this->HostGameButton && this->JoinGameButton && this->OptionsButton && this->QuitButton) {
@@ -40,7 +38,8 @@ void UDSMainMenuWidget::NativeOnInitialized() {
 	// 	this->ApplySettingsButton->OnClicked.AddDynamic(this, &ThisClass::ApplySettings);
 	// 	this->ReturnFromOptionsButton->OnClicked.AddDynamic(this, &ThisClass::ReturnToMainMenu);
 	// }
-	
+
+	this->HideAllElements();
 	this->ShowMainMenu();
 }
 
@@ -53,6 +52,7 @@ void UDSMainMenuWidget::OnHostGame() {
 }
 
 void UDSMainMenuWidget::OpenJoinGameMenu() {
+	DS_LOG_ERROR("Test");
 	this->HideAllElements();
 	this->ShowJoinGameMenu();
 }
@@ -75,8 +75,10 @@ void UDSMainMenuWidget::OnJoinGame() {
 void UDSMainMenuWidget::OnCancelJoinGame() {
 	if (this->HostAddressText) {
 		this->HostAddressText->SetText(FText::GetEmpty());
-		this->ReturnToMainMenu();
 	}
+
+	this->HideAllElements();
+	this->ShowMainMenu();
 }
 
 void UDSMainMenuWidget::OnOptions() {
@@ -151,6 +153,7 @@ void UDSMainMenuWidget::ShowJoinGameMenu() const {
 	this->JoinGameAddressMessage->SetVisibility(ESlateVisibility::Visible);
 	this->HostAddressText->SetVisibility(ESlateVisibility::Visible);
 	this->ConfirmJoinButton->SetVisibility(ESlateVisibility::Visible);
+	this->CancelJoinButton->SetVisibility(ESlateVisibility::Visible);
 }
 
 void UDSMainMenuWidget::ShowOptionsMenu() const {
