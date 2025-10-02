@@ -71,6 +71,9 @@ public:
 
 	UPROPERTY(meta=(BindWidget))
 	UButton* ConfirmJoinButton;
+
+	UPROPERTY(meta=(BindWidget))
+	UButton* CancelJoinButton;
 	
 	// Options Configs;
 	// UPROPERTY(meta=(BindWidget))
@@ -109,6 +112,9 @@ public:
 	
 	UFUNCTION()
 	void OnJoinGame();
+
+	UFUNCTION()
+	void OnCancelJoinGame();
 
 	UFUNCTION()
 	void OnOptions();

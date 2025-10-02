@@ -24,8 +24,9 @@ void UDSMainMenuWidget::NativeOnInitialized() {
 	}
 
 	// Join Game Confirm Button. -Dallai
-	if (this->ConfirmJoinButton) {
-		this->ConfirmJoinButton->OnClicked.AddDynamic(this, &ThisClass::UDSMainMenuWidget::OnJoinGame);
+	if (this->ConfirmJoinButton && this->CancelJoinButton) {
+		this->ConfirmJoinButton->OnClicked.AddDynamic(this, &UDSMainMenuWidget::OnJoinGame);
+		this->ConfirmJoinButton->OnClicked.AddDynamic(this, &UDSMainMenuWidget::OnCancelJoinGame);
 	}
 	
 	// Volume Options. -Dallai;
@@ -71,6 +72,13 @@ void UDSMainMenuWidget::OnJoinGame() {
 	}
 }
 
+void UDSMainMenuWidget::OnCancelJoinGame() {
+	if (this->HostAddressText) {
+		this->HostAddressText->SetText(FText::GetEmpty());
+		this->ReturnToMainMenu();
+	}
+}
+
 void UDSMainMenuWidget::OnOptions() {
 	this->HideAllElements();
 	this->ShowOptionsMenu();
@@ -101,7 +109,6 @@ void UDSMainMenuWidget::ReturnToMainMenu() {
 	this->ShowMainMenu();
 }
 
-
 void UDSMainMenuWidget::HideAllElements() const {
 	// Disable all the Main Menu Elements first. -Dallai
 	this->FirstPumpkinImage->SetVisibility(ESlateVisibility::Collapsed);
@@ -119,6 +126,7 @@ void UDSMainMenuWidget::HideAllElements() const {
 	this->JoinGameAddressMessage->SetVisibility(ESlateVisibility::Collapsed);
 	this->HostAddressText->SetVisibility(ESlateVisibility::Collapsed);
 	this->ConfirmJoinButton->SetVisibility(ESlateVisibility::Collapsed);
+	this->CancelJoinButton->SetVisibility(ESlateVisibility::Collapsed);
 	
 	// Disable the option elements. -Dallai
 	// this->OptionsBackgroundImage->SetVisibility(ESlateVisibility::Collapsed);
