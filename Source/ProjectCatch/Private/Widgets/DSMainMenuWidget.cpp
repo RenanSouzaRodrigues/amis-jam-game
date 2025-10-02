@@ -101,6 +101,7 @@ void UDSMainMenuWidget::HideAllElements() const {
 	this->SecondPumpkinImage->SetVisibility(ESlateVisibility::Collapsed);
 	this->FirstTitleLabel->SetVisibility(ESlateVisibility::Collapsed);
 	this->SecondTitleLabel->SetVisibility(ESlateVisibility::Collapsed);
+	this->SecondTitleShadowLabel->SetVisibility(ESlateVisibility::Collapsed);
 	this->MainMenuButtonsContainer->SetVisibility(ESlateVisibility::Collapsed);
 
 	// Disable all the Join Game Screen. -Dallai
@@ -123,6 +124,7 @@ void UDSMainMenuWidget::ShowMainMenu() const {
 	this->SecondPumpkinImage->SetVisibility(ESlateVisibility::Visible);
 	this->FirstTitleLabel->SetVisibility(ESlateVisibility::Visible);
 	this->SecondTitleLabel->SetVisibility(ESlateVisibility::Visible);
+	this->SecondTitleShadowLabel->SetVisibility(ESlateVisibility::Visible);
 	this->MainMenuButtonsContainer->SetVisibility(ESlateVisibility::Visible);
 }
 
