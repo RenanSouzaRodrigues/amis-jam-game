@@ -19,6 +19,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category="Game Instance Properties")
 	FName MainMenuLevelName { FName("Level_MainMenu") };
+	
+	UPROPERTY(EditAnywhere, Category="Game Instance Properties")
+	FName CatchGameLevelName { FName("Level_CatchGame") };
 
 	UPROPERTY(EditAnywhere, Category="Game Instance Properties")
 	TObjectPtr<USoundMix> GameSoundMixer;
@@ -48,6 +51,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category="Online Feature")
 	void DestroySessionAndReturn();
+
+	UFUNCTION()
+	void StartCatchGame() const;
 
 	UFUNCTION()
 	UDSGameUserSettings* GetUserSettings() const;

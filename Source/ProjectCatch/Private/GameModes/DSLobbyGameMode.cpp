@@ -60,3 +60,9 @@ void ADSLobbyGameMode::ReturnAllClientsToMainMenuLevel() const {
 	UDSGameInstance* gameInstance = Cast<UDSGameInstance>(this->GetGameInstance());
 	gameInstance->DestroySessionAndReturn();
 }
+
+void ADSLobbyGameMode::MovePlayersToGameLevel() const {
+	if (const auto gameInstance = Cast<UDSGameInstance>(this->GetGameInstance())) {
+		gameInstance->StartCatchGame();
+	}
+}

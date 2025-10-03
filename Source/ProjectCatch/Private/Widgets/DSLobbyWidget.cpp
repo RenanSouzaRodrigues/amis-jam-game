@@ -1,12 +1,9 @@
 // Made by Dallai Studios - 2025
 
 #include "Widgets/DSLobbyWidget.h"
-
-#include "Actors/DSLobbyDummy.h"
 #include "Components/Button.h"
 #include "Components/EditableTextBox.h"
 #include "Controllers/DSLobbyPlayerController.h"
-#include "GameInstance/DSGameInstance.h"
 #include "GameModes/DSLobbyGameMode.h"
 #include "Kismet/GameplayStatics.h"
 #include "PlayerStates/DSLobbyPlayerState.h"
@@ -79,6 +76,8 @@ void UDSLobbyWidget::SetPlayerStateReference(ADSLobbyPlayerState* PlayerState) {
 
 void UDSLobbyWidget::OnStartGame() {
 	DS_LOG_SUCCESS("Server Start Game");
+	const ADSLobbyGameMode* gameMode = Cast<ADSLobbyGameMode>(UGameplayStatics::GetGameMode(this->GetWorld()));
+	gameMode->MovePlayersToGameLevel();
 }
 
 void UDSLobbyWidget::OnCancelSession() {

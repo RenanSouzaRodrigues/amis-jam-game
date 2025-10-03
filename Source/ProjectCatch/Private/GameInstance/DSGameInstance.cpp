@@ -56,6 +56,18 @@ void UDSGameInstance::DestroySessionAndReturn() {
 	sessionInterface->ClearOnDestroySessionCompleteDelegates(this);
 }
 
+void UDSGameInstance::StartCatchGame() const {
+	const auto world = this->GetWorld();
+	if (!world) {
+		DS_LOG_ERROR("Game Instance Error: World reference is invalid when trying to send players to the game level");
+		return;
+	}
+
+	const FString url = this->CatchGameLevelName.ToString() + TEXT("?listen");
+	
+	world->ServerTravel(url);
+}
+
 UDSGameUserSettings* UDSGameInstance::GetUserSettings() const {
 	return this->UserSettings;
 }

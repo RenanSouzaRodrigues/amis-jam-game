@@ -20,4 +20,6 @@ public:
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
 	void ReturnAllClientsToMainMenuLevel() const;
+
+	void MovePlayersToGameLevel() const;
 };
