@@ -31,6 +31,15 @@ public:
 	// Actor Properties
 public:
 	UPROPERTY(EditAnywhere, Category="Actor Properties")
+	TObjectPtr<USkeletalMesh> RunnerSkeletalMesh;
+
+	UPROPERTY(EditAnywhere, Category="Actor Properties")
+	TObjectPtr<USkeletalMesh> CatcherSkeletalMesh;
+
+	UPROPERTY(EditAnywhere, Category="Actor Properties")
+	FName HeadSocketName;
+	
+	UPROPERTY(EditAnywhere, Category="Actor Properties")
 	TObjectPtr<UStaticMesh> RunnerHair;
 
 	UPROPERTY(EditAnywhere, Category="Actor Properties")
@@ -50,6 +59,9 @@ public:
 
 private:
 	FCollisionQueryParams queryParams;
+
+	UPROPERTY(EditAnywhere, Category="Actor Properties")
+	bool IsCatcher { false };
 	
 	// Actor Inputs 
 public:
@@ -83,5 +95,12 @@ public:
 	void PerformAttackTracer() const;
 
 public:
+	UFUNCTION(BlueprintCallable, BlueprintPure)
 	bool IsTheCatcher() const;
+
+	UFUNCTION()
+	void SetMovementSpeed() const;
+
+	UFUNCTION()
+	void SetSkeletalMesh() const;
 };

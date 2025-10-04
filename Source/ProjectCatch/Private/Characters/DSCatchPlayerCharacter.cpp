@@ -4,15 +4,27 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputSubsystemInterface.h"
 #include "EnhancedInputComponent.h"
+#include "Camera/CameraComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "Utils/DSMacros.h"
 
 ADSCatchPlayerCharacter::ADSCatchPlayerCharacter() {
 	PrimaryActorTick.bCanEverTick = false;
+
+	this->CameraSpringArm = this->CreateDefaultSubobject<USpringArmComponent>("Camera Spring Arm");
+	this->CameraSpringArm->SetupAttachment(this->GetRootComponent());
+	this->CameraSpringArm->bDoCollisionTest = false;
+
+	this->PlayerCamera = this->CreateDefaultSubobject<UCameraComponent>("Player Camera");
+	this->PlayerCamera->SetupAttachment(this->CameraSpringArm);
+
+	this->HeadMesh = this->CreateDefaultSubobject<UStaticMeshComponent>("Head Mesh");
 }
 
 void ADSCatchPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
+	
 	const APlayerController* playerController = this->GetController<APlayerController>();
 
 	if (!playerController) {
@@ -65,16 +77,24 @@ void ADSCatchPlayerCharacter::BeginPlay() {
 	Super::BeginPlay();
 
 	this->queryParams.AddIgnoredActor(this);
+
+	this->SetMovementSpeed();
+	this->SetSkeletalMesh();
 }
 
 bool ADSCatchPlayerCharacter::IsTheCatcher() const {
-	return false;
+	return this->IsCatcher;
 }
 
 void ADSCatchPlayerCharacter::Move(const FInputActionValue& Value) {
 	const auto value = Value.Get<FVector2D>();
-	this->AddMovementInput(this->GetActorForwardVector(), value.X);
-	this->AddMovementInput(this->GetActorRightVector(), value.Y);
+
+	const FRotator yawRotation(0, this->GetControlRotation().Yaw, 0);
+	const FVector forwardVector = FRotationMatrix(yawRotation).GetUnitAxis(EAxis::X);
+	const FVector rightVector = FRotationMatrix(yawRotation).GetUnitAxis(EAxis::Y);
+	
+	this->AddMovementInput(forwardVector,  value.X);
+	this->AddMovementInput(rightVector, value.Y);
 }
 
 void ADSCatchPlayerCharacter::Attack(const FInputActionValue& Value) {
@@ -111,4 +131,15 @@ void ADSCatchPlayerCharacter::PerformAttackTracer() const {
 			DS_LOG_INFO("HIT ACTOR");
 		}
 	}
+}
+
+void ADSCatchPlayerCharacter::SetMovementSpeed() const {
+	this->GetCharacterMovement()->MaxWalkSpeed = this->IsCatcher ? this->CatcherMovementSpeed : this->RunnerMovementSpeed;
+}
+
+void ADSCatchPlayerCharacter::SetSkeletalMesh() const {
+	this->GetMesh()->SetSkeletalMeshAsset(this->IsCatcher ? this->CatcherSkeletalMesh : this->RunnerSkeletalMesh);
+	this->HeadMesh->SetStaticMesh(this->IsCatcher ? this->CatcherPumpkin : this->RunnerHair);
+	this->HeadMesh->AttachToComponent(this->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, this->HeadSocketName);
+	this->HeadMesh->SetRelativeRotation(FRotator(0, 0, -90));
 }
