@@ -7,11 +7,18 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Net/UnrealNetwork.h"
 #include "Utils/DSMacros.h"
 
+
+// =================================================================
+// UNREAL LIFECYCLE
+// =================================================================
 ADSCatchPlayerCharacter::ADSCatchPlayerCharacter() {
 	PrimaryActorTick.bCanEverTick = false;
 
+	this->bReplicates = true;
+	
 	this->CameraSpringArm = this->CreateDefaultSubobject<USpringArmComponent>("Camera Spring Arm");
 	this->CameraSpringArm->SetupAttachment(this->GetRootComponent());
 	this->CameraSpringArm->bDoCollisionTest = false;
@@ -20,6 +27,7 @@ ADSCatchPlayerCharacter::ADSCatchPlayerCharacter() {
 	this->PlayerCamera->SetupAttachment(this->CameraSpringArm);
 
 	this->HeadMesh = this->CreateDefaultSubobject<UStaticMeshComponent>("Head Mesh");
+	this->HeadMesh->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
 }
 
 void ADSCatchPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) {
@@ -42,14 +50,14 @@ void ADSCatchPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
 	UEnhancedInputLocalPlayerSubsystem* enhancedSubsystem = localPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>();
 
 	if (!enhancedSubsystem) {
-		DS_LOG_ERROR("Boomer Shooter Character Error: Enhanced Input Subsystem is invalid");
+		DS_LOG_ERROR("Catcher Player Character Error: Enhanced Input Subsystem is invalid");
 		return;
 	}
 
 	enhancedSubsystem->ClearAllMappings();
 
 	if (!this->CharacterInputMappingContext) {
-		DS_LOG_WARN("Warning: Default input mapping context is not defined");
+		DS_LOG_WARN("Cather Player Character Warning: Default input mapping context is not defined");
 		return;
 	}
 
@@ -58,7 +66,7 @@ void ADSCatchPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
 	UEnhancedInputComponent* inputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent);
 
 	if (!inputComponent) {
-		DS_LOG_ERROR("Boomer Shooter Character Error: input component is not defined");
+		DS_LOG_ERROR("Cather Player Character Error: input component is not defined");
 		return;
 	}
 
@@ -75,17 +83,16 @@ void ADSCatchPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
 
 void ADSCatchPlayerCharacter::BeginPlay() {
 	Super::BeginPlay();
-
 	this->queryParams.AddIgnoredActor(this);
-
 	this->SetMovementSpeed();
 	this->SetSkeletalMesh();
 }
 
-bool ADSCatchPlayerCharacter::IsTheCatcher() const {
-	return this->IsCatcher;
-}
 
+
+// =================================================================
+// ACTION INPUT EVENTS
+// =================================================================
 void ADSCatchPlayerCharacter::Move(const FInputActionValue& Value) {
 	const auto value = Value.Get<FVector2D>();
 
@@ -99,7 +106,7 @@ void ADSCatchPlayerCharacter::Move(const FInputActionValue& Value) {
 
 void ADSCatchPlayerCharacter::Attack(const FInputActionValue& Value) {
 	if (!this->IsTheCatcher()) return;
-	this->PerformAttackTracer();
+	this->Server_PerformAttack();
 }
 
 void ADSCatchPlayerCharacter::PerformAttackTracer() const {
@@ -133,6 +140,36 @@ void ADSCatchPlayerCharacter::PerformAttackTracer() const {
 	}
 }
 
+
+
+// =================================================================
+// MULTIPLAYER PROPERTIES
+// =================================================================
+void ADSCatchPlayerCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const {
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ADSCatchPlayerCharacter, IsCatcher);
+}
+
+void ADSCatchPlayerCharacter::Server_SetIsCatcher_Implementation(const bool value) {
+	this->IsCatcher = value;
+	if (this->HasAuthority()) {
+		this->OnRep_IsCatcher();
+	}
+}
+
+void ADSCatchPlayerCharacter::OnRep_IsCatcher() const {
+	this->SetMovementSpeed();
+	this->SetSkeletalMesh();
+}
+
+void ADSCatchPlayerCharacter::Server_PerformAttack_Implementation() {
+}
+
+
+
+// =================================================================
+// ACTOR METHODS
+// =================================================================
 void ADSCatchPlayerCharacter::SetMovementSpeed() const {
 	this->GetCharacterMovement()->MaxWalkSpeed = this->IsCatcher ? this->CatcherMovementSpeed : this->RunnerMovementSpeed;
 }

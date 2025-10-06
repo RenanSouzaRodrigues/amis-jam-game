@@ -16,8 +16,10 @@ UCLASS()
 class PROJECTCATCH_API ADSCatchPlayerCharacter : public ACharacter {
 	GENERATED_BODY()
 
-	// Actor Components
-public:
+	// =================================================================
+	// ACTOR COMPONENTS
+	// =================================================================
+protected:
 	UPROPERTY(EditAnywhere, Category="Actor Components")
 	TObjectPtr<USpringArmComponent> CameraSpringArm;
 
@@ -28,8 +30,11 @@ public:
 	TObjectPtr<UStaticMeshComponent> HeadMesh;
 
 	
-	// Actor Properties
-public:
+	
+	// =================================================================
+	// ACTOR PROPERTIES
+	// =================================================================
+protected:
 	UPROPERTY(EditAnywhere, Category="Actor Properties")
 	TObjectPtr<USkeletalMesh> RunnerSkeletalMesh;
 
@@ -57,14 +62,15 @@ public:
 	UPROPERTY(EditAnywhere, Category="Actor Properties")
 	float DetectionSphereRadius { 50 };
 
-private:
-	FCollisionQueryParams queryParams;
-
 	UPROPERTY(EditAnywhere, Category="Actor Properties")
-	bool IsCatcher { false };
+	TObjectPtr<UAnimMontage> AttackAnimationMontage;
 	
-	// Actor Inputs 
-public:
+
+	
+	// =================================================================
+	// ACTOR INPUTS
+	// =================================================================
+protected:
 	UPROPERTY(EditAnywhere, Category="Actor Inputs")
 	TObjectPtr<UInputMappingContext> CharacterInputMappingContext;
 
@@ -73,34 +79,66 @@ public:
 
 	UPROPERTY(EditAnywhere, Category="Actor Inputs")
 	TObjectPtr<UInputAction> AttackInputAction;
+
 	
-	
-	// Unreal Engine Lifecycle
+
+	// =================================================================
+	// UNREAL LIFECYCLE
+	// =================================================================
 public:
 	ADSCatchPlayerCharacter();
-	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;	
-
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 protected:
 	virtual void BeginPlay() override;
 
 
-	// Movement
-public:
+	
+	// =================================================================
+	// ACTION INPUT EVENTS
+	// =================================================================
+protected:
 	void Move(const FInputActionValue& Value);
+	void Attack(const FInputActionValue& Value);
+	
 
 	
-	// Attack
+	// =================================================================
+	// MULTIPLAYER PROPERTIES
+	// =================================================================
+private:
+	FCollisionQueryParams queryParams;
+	
+	UPROPERTY(ReplicatedUsing=OnRep_IsCatcher)
+	bool IsCatcher { false };
+	
 public:
-	void Attack(const FInputActionValue& Value);
-	void PerformAttackTracer() const;
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
+	UFUNCTION(Server, Reliable)
+	void Server_SetIsCatcher(const bool value);
+	void Server_SetIsCatcher_Implementation(const bool value);
+	
+	UFUNCTION()
+	void OnRep_IsCatcher() const;
+	
+	UFUNCTION(Server, Reliable)
+	void Server_PerformAttack();
+	void Server_PerformAttack_Implementation();
+	
+
+	// =================================================================
+	// ACTOR METHODS
+	// =================================================================
 public:
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	bool IsTheCatcher() const;
-
+	FORCEINLINE bool IsTheCatcher() const { return this->IsCatcher; }
+	
 	UFUNCTION()
 	void SetMovementSpeed() const;
 
 	UFUNCTION()
 	void SetSkeletalMesh() const;
+
+	UFUNCTION()
+	void PerformAttackTracer() const;
 };
