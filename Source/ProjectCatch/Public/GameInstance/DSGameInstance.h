@@ -3,61 +3,66 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AdvancedFriendsGameInstance.h"
 #include "Engine/GameInstance.h"
 #include "DSGameInstance.generated.h"
+
+#define GAME_IDENTIFIER FName("PROJECT_CATCH_LEVEL_NAME")
 
 class UDSGameUserSettings;
 
 UCLASS()
-class PROJECTCATCH_API UDSGameInstance : public UGameInstance
+class PROJECTCATCH_API UDSGameInstance : public UAdvancedFriendsGameInstance 
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, Category="Game Instance Properties")
-	FName LobbyLevelName { FName("Level_Lobby") };
+	FName MainMenuLevelName { FName("Level_MainMenu") };
 
 	UPROPERTY(EditAnywhere, Category="Game Instance Properties")
-	FName MainMenuLevelName { FName("Level_MainMenu") };
+	FName LobbyLevelName { FName("Level_Lobby") };
 	
 	UPROPERTY(EditAnywhere, Category="Game Instance Properties")
 	FName CatchGameLevelName { FName("Level_CatchGame") };
 
-	UPROPERTY(EditAnywhere, Category="Game Instance Properties")
-	TObjectPtr<USoundMix> GameSoundMixer;
 
-	UPROPERTY(EditAnywhere, Category="Game Instance Properties")
-	TObjectPtr<USoundClass> MasterSoundClass;
-
-	UPROPERTY(EditAnywhere, Category="Game Instance Properties")
-	TObjectPtr<USoundClass> MusicSoundClass;
-
-	UPROPERTY(EditAnywhere, Category="Game Instance Properties")
-	TObjectPtr<USoundClass> SfxSoundClass;
-	
-private:
-	UPROPERTY()
-	UDSGameUserSettings* UserSettings;
-
+	// ==================================================================
+	// HOST GAME
+	// ==================================================================
 public:
-	virtual void Init() override;
-	
-public:
-    UFUNCTION(BlueprintCallable, Category="Online Features")
-    void HostGame() const;
-    
-    UFUNCTION(BlueprintCallable, Category="Online Feaures")
-    void JoinGame(const FString& ServerAddress) const;
-
-	UFUNCTION(BlueprintCallable, Category="Online Feature")
-	void DestroySessionAndReturn();
+	UFUNCTION()
+    void CreateSession() const;
 
 	UFUNCTION()
-	void StartCatchGame() const;
+	void OnCreateSessionSuccess();
 
 	UFUNCTION()
-	UDSGameUserSettings* GetUserSettings() const;
+	void OnCreateSessionFail();
 	
-private:
-	void SessionDestructionComplete_EventListener(FName SessionName, bool bWasSuccessfull) const;
+
+	// ==================================================================
+	// FIND SESSION
+	// ==================================================================
+	UFUNCTION()
+	void FindSession();
+
+	UFUNCTION()
+	void OnFindSessionSuccess(const TArray<FBlueprintSessionResult>& Results);
+
+	UFUNCTION()
+	void OnFindSessionFail(const TArray<FBlueprintSessionResult>& Results);
+	
+	
+	// ==================================================================
+	// JOIN SESSION
+	// ==================================================================
+	UFUNCTION()
+	void JoinSession(const FBlueprintSessionResult& Session);
+
+	UFUNCTION()
+	void OnJoinSessionSuccess();
+
+	UFUNCTION()
+	void OnJoinSessionFail();
 };
