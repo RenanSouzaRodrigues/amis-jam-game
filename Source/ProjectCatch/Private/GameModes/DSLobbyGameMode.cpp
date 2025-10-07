@@ -62,7 +62,17 @@ void ADSLobbyGameMode::ReturnAllClientsToMainMenuLevel() const {
 }
 
 void ADSLobbyGameMode::MovePlayersToGameLevel() const {
-	if (const auto gameInstance = Cast<UDSGameInstance>(this->GetGameInstance())) {
-		gameInstance->StartCatchGame();
+	const auto gameInstance = Cast<UDSGameInstance>(this->GetGameInstance());
+
+	if (!gameInstance) {
+		DS_LOG_ERROR("lobby game mode error: game instance is invalid");
+		return;
+	}
+
+	gameInstance->StartCatchGame();
+
+	for (auto index = 0; index < this->GameState->PlayerArray.Num(); index++) {
+		const auto controller = Cast<APlayerController>(this->GameState->PlayerArray[index]);
+		if (controller) controller->ClientTravel("127.0.0.1", TRAVEL_Absolute, false);
 	}
 }

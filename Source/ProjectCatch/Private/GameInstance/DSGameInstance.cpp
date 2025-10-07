@@ -26,13 +26,11 @@ void UDSGameInstance::Init() {
 
 void UDSGameInstance::HostGame() const {
 	DS_LOG_INFO("Hosting Game");
-
 	UGameplayStatics::OpenLevel(this->GetWorld(), this->LobbyLevelName, true, "listen");
 }
 
 void UDSGameInstance::JoinGame(const FString& ServerAddress) const {
 	DS_LOG_INFO(FString::Printf(TEXT("Joining the lobby at address: %s"), *ServerAddress));
-
 	if (APlayerController* localPlayerController = this->GetFirstLocalPlayerController()) {
 		localPlayerController->ClientTravel(ServerAddress, ETravelType::TRAVEL_Absolute);
 	}
@@ -57,15 +55,9 @@ void UDSGameInstance::DestroySessionAndReturn() {
 }
 
 void UDSGameInstance::StartCatchGame() const {
-	const auto world = this->GetWorld();
-	if (!world) {
-		DS_LOG_ERROR("Game Instance Error: World reference is invalid when trying to send players to the game level");
-		return;
-	}
-
-	const FString url = this->CatchGameLevelName.ToString() + TEXT("?listen");
+	DS_LOG_SUCCESS("Game mode: Stating Game");
+	UGameplayStatics::OpenLevel(this->GetWorld(), this->CatchGameLevelName, true, "listen");
 	
-	world->ServerTravel(url);
 }
 
 UDSGameUserSettings* UDSGameInstance::GetUserSettings() const {

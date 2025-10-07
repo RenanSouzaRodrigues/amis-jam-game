@@ -4,6 +4,8 @@
 
 #include "Actors/DSLobbyDummy.h"
 #include "Blueprint/UserWidget.h"
+#include "GameModes/DSLobbyGameMode.h"
+#include "Kismet/GameplayStatics.h"
 #include "Utils/DSMacros.h"
 #include "Widgets/DSLobbyWidget.h"
 #include "PlayerStates/DSLobbyPlayerState.h"
@@ -83,6 +85,15 @@ void ADSLobbyPlayerController::RequestLeaveLobby(const FString& MainMenuLevelNam
 void ADSLobbyPlayerController::Server_RequestLeaveLobby_Implementation(const FString& MainMenuLevelName) {
 	this->DestroyDummyAndLeave();
 	this->ClientTravel(MainMenuLevelName, TRAVEL_Absolute);
+}
+
+void ADSLobbyPlayerController::Server_RequestGameStart_Implementation() {
+	const auto gameMode = Cast<ADSLobbyGameMode>(UGameplayStatics::GetGameMode(this->GetWorld()));
+	if (!gameMode) {
+		DS_LOG_ERROR("lobby player controller error: game mode is invalid");
+		return;
+	}
+	gameMode->MovePlayersToGameLevel();
 }
 
 void ADSLobbyPlayerController::DestroyDummyAndLeave() const {

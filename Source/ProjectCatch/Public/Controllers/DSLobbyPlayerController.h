@@ -31,5 +31,9 @@ public:
 	void Server_RequestLeaveLobby(const FString& MainMenuLevelName);
 	void Server_RequestLeaveLobby_Implementation(const FString& MainMenuLevelName);
 
+	UFUNCTION(Server, Reliable)
+	void Server_RequestGameStart();
+	void Server_RequestGameStart_Implementation();
+	
 	void DestroyDummyAndLeave() const;
 };

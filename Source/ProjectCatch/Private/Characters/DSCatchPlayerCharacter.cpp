@@ -109,37 +109,6 @@ void ADSCatchPlayerCharacter::Attack(const FInputActionValue& Value) {
 	this->Server_PerformAttack();
 }
 
-void ADSCatchPlayerCharacter::PerformAttackTracer() const {
-	const FVector startLocation = GetActorLocation();
-	const FVector endLocation = startLocation + (this->GetActorForwardVector() * this->CatcherDetectionDistance);
-    
-	FCollisionQueryParams QueryParams;
-	QueryParams.AddIgnoredActor(this); 
-    
-	FHitResult HitResult;
-	const bool bHit = GetWorld()->SweepSingleByChannel(
-		HitResult,
-		startLocation,
-		endLocation,
-		FQuat::Identity,
-		ECC_Pawn,
-		FCollisionShape::MakeSphere(this->DetectionSphereRadius),
-		QueryParams
-	);
-    
-	if (bHit) {
-		DrawDebugSphere(GetWorld(), HitResult.Location, this->DetectionSphereRadius, 12, FColor::Red, false, 2.0f);
-	} else {
-		DrawDebugSphere(GetWorld(), endLocation, this->DetectionSphereRadius, 12, FColor::Green, false, 2.0f);
-	}
-    
-	if (bHit) {
-		if (const auto actor = HitResult.GetActor()) {
-			DS_LOG_INFO("HIT ACTOR");
-		}
-	}
-}
-
 
 
 // =================================================================
@@ -179,4 +148,35 @@ void ADSCatchPlayerCharacter::SetSkeletalMesh() const {
 	this->HeadMesh->SetStaticMesh(this->IsCatcher ? this->CatcherPumpkin : this->RunnerHair);
 	this->HeadMesh->AttachToComponent(this->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, this->HeadSocketName);
 	this->HeadMesh->SetRelativeRotation(FRotator(0, 0, -90));
+}
+
+void ADSCatchPlayerCharacter::PerformAttackTracer() const {
+	const FVector startLocation = GetActorLocation();
+	const FVector endLocation = startLocation + (this->GetActorForwardVector() * this->CatcherDetectionDistance);
+    
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this); 
+    
+	FHitResult HitResult;
+	const bool bHit = GetWorld()->SweepSingleByChannel(
+		HitResult,
+		startLocation,
+		endLocation,
+		FQuat::Identity,
+		ECC_Pawn,
+		FCollisionShape::MakeSphere(this->DetectionSphereRadius),
+		QueryParams
+	);
+    
+	if (bHit) {
+		DrawDebugSphere(GetWorld(), HitResult.Location, this->DetectionSphereRadius, 12, FColor::Red, false, 2.0f);
+	} else {
+		DrawDebugSphere(GetWorld(), endLocation, this->DetectionSphereRadius, 12, FColor::Green, false, 2.0f);
+	}
+    
+	if (bHit) {
+		if (const auto actor = HitResult.GetActor()) {
+			DS_LOG_INFO("HIT ACTOR");
+		}
+	}
 }

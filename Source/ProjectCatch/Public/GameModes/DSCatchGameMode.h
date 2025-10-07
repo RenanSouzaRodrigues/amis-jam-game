@@ -9,4 +9,18 @@
 UCLASS()
 class PROJECTCATCH_API ADSCatchGameMode : public AGameMode {
 	GENERATED_BODY()
+
+protected:
+	UPROPERTY(EditAnywhere, Category="Game Mode Properties")
+	float TimeToWaitToStartGame { 10.f };
+	
+private:
+	FTimerHandle WaitPlayersTimeHandle;
+
+protected:
+	virtual void BeginPlay() override;
+	virtual void PostLogin(APlayerController* NewPlayer) override;
+
+	UFUNCTION()
+	void StartGame_EventListener();
 };

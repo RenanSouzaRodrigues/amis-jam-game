@@ -12,23 +12,14 @@
 void UDSLobbyWidget::NativeOnInitialized() {
 	Super::NativeOnInitialized();
 
-	if (this->StartGameButton) {
+	if (this->StartGameButton && this->CancelButton) {
 		this->StartGameButton->OnClicked.AddDynamic(this, &UDSLobbyWidget::OnStartGame);
-	}
-
-	if (this->CancelButton) {
 		this->CancelButton->OnClicked.AddDynamic(this, &UDSLobbyWidget::OnCancelSession);
 	}
 
-	if (this->PlayerReadyButton) {
+	if (this->PlayerReadyButton && this->PlayerNotReadyButton && this->ReturnButton) {
 		this->PlayerReadyButton->OnClicked.AddDynamic(this, &UDSLobbyWidget::OnPlayerReady);
-	}
-
-	if (this->PlayerNotReadyButton) {
 		this->PlayerNotReadyButton->OnClicked.AddDynamic(this, &UDSLobbyWidget::OnPlayerNotReady);
-	}
-	
-	if (this->ReturnButton) {
 		this->ReturnButton->OnClicked.AddDynamic(this, &UDSLobbyWidget::OnReturnToMainMenu);
 	}
 
@@ -75,9 +66,14 @@ void UDSLobbyWidget::SetPlayerStateReference(ADSLobbyPlayerState* PlayerState) {
 }
 
 void UDSLobbyWidget::OnStartGame() {
-	DS_LOG_SUCCESS("Server Start Game");
-	const ADSLobbyGameMode* gameMode = Cast<ADSLobbyGameMode>(UGameplayStatics::GetGameMode(this->GetWorld()));
-	gameMode->MovePlayersToGameLevel();
+	const auto controller = Cast<ADSLobbyPlayerController>(this->LobbyPlayerStateReference->GetOwningController());
+
+	if (!controller) {
+		DS_LOG_ERROR("lobby widget error: player controller is invalid");
+		return;
+	}
+
+	controller->Server_RequestGameStart();
 }
 
 void UDSLobbyWidget::OnCancelSession() {
