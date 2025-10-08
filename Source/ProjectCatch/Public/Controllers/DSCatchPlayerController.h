@@ -9,4 +9,7 @@
 UCLASS()
 class PROJECTCATCH_API ADSCatchPlayerController : public APlayerController {
 	GENERATED_BODY()
+
+protected:
+	virtual void BeginPlay() override;
 };

@@ -4,6 +4,7 @@
 #include "Components/Button.h"
 #include "Components/EditableTextBox.h"
 #include "Controllers/DSLobbyPlayerController.h"
+#include "GameInstance/DSGameInstance.h"
 #include "GameModes/DSLobbyGameMode.h"
 #include "Kismet/GameplayStatics.h"
 #include "PlayerStates/DSLobbyPlayerState.h"
@@ -66,14 +67,14 @@ void UDSLobbyWidget::SetPlayerStateReference(ADSLobbyPlayerState* PlayerState) {
 }
 
 void UDSLobbyWidget::OnStartGame() {
-	const auto controller = Cast<ADSLobbyPlayerController>(this->LobbyPlayerStateReference->GetOwningController());
+	const auto gameInstance = Cast<UDSGameInstance>(this->GetGameInstance());
 
-	if (!controller) {
-		DS_LOG_ERROR("lobby widget error: player controller is invalid");
+	if (!gameInstance) {
+		DS_LOG_ERROR("Game instance is invalid");
 		return;
 	}
 
-	controller->Server_RequestGameStart();
+	gameInstance->StartCatchGame();
 }
 
 void UDSLobbyWidget::OnCancelSession() {

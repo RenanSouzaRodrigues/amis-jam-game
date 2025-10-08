@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
-#include "Interfaces/OnlineSessionInterface.h"
-#include "OnlineSessionSettings.h"
+#include "Enums/EEMSJoinSessionCompleteResult.h"
+#include "Structs/FEMSOnlineSessionSearchResult.h"
 #include "DSGameInstance.generated.h"
 
-#define GAME_SESSION_NAME TEXT("CURSEDCATCH_GAME_SESSION")
+#define GAME_SESSION_NAME FString("CURSED_CATCH_MATCH")
 
 class UDSGameUserSettings;
 
@@ -17,51 +17,44 @@ class PROJECTCATCH_API UDSGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
 
+	
+	// ==================================================================
+	// GAME INSTANCE PROPERTIES
+	// ==================================================================
 public:
 	UPROPERTY(EditAnywhere, Category="Game Instance Properties")
-	FName MainMenuLevelName { FName("Level_MainMenu") };
+	FString MainMenuLevelName { FString("Levels/Level_MainMenu") };
 
 	UPROPERTY(EditAnywhere, Category="Game Instance Properties")
-	FString LobbyLevelName { "Game/Levels/Level_Lobby" };
+	FString LobbyLevelName { FString("Levels/Level_Lobby") };
 	
 	UPROPERTY(EditAnywhere, Category="Game Instance Properties")
-	FName CatchGameLevelName { FName("Level_CatchGame") };
-
+	FString CatchGameLevelName { FString("Levels/Level_Catch") };
+	
+	
+	// ==================================================================
+	// MULTIPLAYER
+	// ==================================================================
+private:
+	class UDSSessionSubsystem* GetSessionSubsystem() const;
+	
+public:
+    void CreateSession();
 
 private:
-	IOnlineSessionPtr OnlineSessionInterfacePointer;
-	TSharedPtr<FOnlineSessionSearch> SessionSearch;
+	UFUNCTION()
+	void OnCreateSessionComplete(bool bWasSuccessful);
 
-	FORCEINLINE bool IsOnlineSessionInterfaceValid() const { return this->OnlineSessionInterfacePointer.IsValid(); }
-
-	
-	// ==================================================================
-	// UNREAL LIFECYCLE
-	// ==================================================================	
 public:
-	virtual void Init() override;
-	
-	// ==================================================================
-	// HOST GAME
-	// ==================================================================
-public:
-    void CreateSession() const;
-
-	void OnCreateSessionComplete(FName SessionName, bool bWasSuccessful);
-	
-	
-	// ==================================================================
-	// FIND SESSION
-	// ==================================================================
 	void FindSession();
 
-	void OnFindSessionsComplete(bool bWasSuccessful);
-	
-	
-	// ==================================================================
-	// JOIN SESSION
-	// ==================================================================
-	void JoinFoundSession(const FOnlineSessionSearchResult& Session) const;
+private:
+	UFUNCTION()
+	void OnFindSession(const TArray<FEMSOnlineSessionSearchResult>& sessionResult, bool bSuccess);
 
-	void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
+	UFUNCTION()
+	void OnJoinedSession(EEMSJoinSessionCompleteResult joinResult);
+
+public:
+	void StartCatchGame();
 };

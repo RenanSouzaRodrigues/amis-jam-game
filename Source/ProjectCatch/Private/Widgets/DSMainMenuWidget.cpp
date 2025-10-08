@@ -21,85 +21,40 @@ void UDSMainMenuWidget::NativeOnInitialized() {
 		this->QuitButton->OnClicked.AddDynamic(this, &UDSMainMenuWidget::OnQuit);
 	}
 
-	// Join Game Confirm Button. -Dallai
-	// if (this->ConfirmJoinButton && this->CancelJoinButton) {
-	// 	this->ConfirmJoinButton->OnClicked.AddDynamic(this, &UDSMainMenuWidget::OnJoinGame);
-	// 	this->CancelJoinButton->OnClicked.AddDynamic(this, &UDSMainMenuWidget::OnCancelJoinGame);
-	// }
-	
-	// Volume Options. -Dallai;
-	// if (this->MasterVolumeSlider && this->MusicVolumeSlider && this->SfxVolumeSlider) {
-	// 	this->MusicVolumeSlider->OnValueChanged.AddDynamic(this, &ThisClass::UDSMainMenuWidget::ChangeMusicVolume);
-	// 	this->MasterVolumeSlider->OnValueChanged.AddDynamic(this, &ThisClass::ChangeMasterVolume);
-	// 	this->SfxVolumeSlider->OnValueChanged.AddDynamic(this, &ThisClass::ChangeSfxVolume);
-	// }
-	//
-	// if (this->ApplySettingsButton && this->ReturnFromOptionsButton) {
-	// 	this->ApplySettingsButton->OnClicked.AddDynamic(this, &ThisClass::ApplySettings);
-	// 	this->ReturnFromOptionsButton->OnClicked.AddDynamic(this, &ThisClass::ReturnToMainMenu);
-	// }
-
 	this->HideAllElements();
 	this->ShowMainMenu();
 }
 
 void UDSMainMenuWidget::OnHostGame() {
-	if (const auto gameInstance = Cast<UDSGameInstance>(this->GetGameInstance())) {
-		gameInstance->CreateSession();
-	} else {
-		DS_LOG_ERROR("Host game error: Fail to retrieve game instance in order to host the game. Make sure the default game instance is of type UDSGameInstance");
-	}
-}
+	const auto gameInstance = Cast<UDSGameInstance>(this->GetGameInstance());
 
-void UDSMainMenuWidget::OpenJoinGameMenu() {
-	this->HideAllElements();
-	this->ShowJoinGameMenu();
+	if (!gameInstance) {
+		DS_LOG_ERROR("Host game error: Fail to retrieve game instance in order to host the game. Make sure the default game instance is of type UDSGameInstance");
+		return;
+	}
+
+	gameInstance->CreateSession();
 }
 
 void UDSMainMenuWidget::OnJoinGame() {
 	const auto gameInstance = Cast<UDSGameInstance>(this->GetGameInstance());
 
 	if (!gameInstance) {
-		DS_LOG_ERROR("Main Menu Widget Error: Game Instance is invalid or not of type DSGameInstance");
+		DS_LOG_ERROR("Host game error: Fail to retrieve game instance in order to host the game. Make sure the default game instance is of type UDSGameInstance");
 		return;
 	}
 
 	gameInstance->FindSession();
 }
 
-void UDSMainMenuWidget::OnCancelJoinGame() {
-	if (this->HostAddressText) {
-		this->HostAddressText->SetText(FText::GetEmpty());
-	}
-
-	this->HideAllElements();
-	this->ShowMainMenu();
-}
-
 void UDSMainMenuWidget::OnOptions() {
-	this->HideAllElements();
-	this->ShowOptionsMenu();
+	// this->HideAllElements();
+	// this->ShowOptionsMenu();
 }
 
 void UDSMainMenuWidget::OnQuit() {
 	UKismetSystemLibrary::QuitGame(this, this->GetOwningPlayer(), EQuitPreference::Quit, true);
 }
-
-void UDSMainMenuWidget::ChangeMasterVolume(const float Value) { }
-
-void UDSMainMenuWidget::ChangeMusicVolume(const float Value) { }
-
-void UDSMainMenuWidget::ChangeSfxVolume(const float Value) { }
-
-void UDSMainMenuWidget::ChangeScreenResolution() { }
-
-void UDSMainMenuWidget::ChangeFrameRate() { }
-
-void UDSMainMenuWidget::ToggleVSync() { }
-
-void UDSMainMenuWidget::ChangeVideoQuality() { }
-
-void UDSMainMenuWidget::ApplySettings() { }
 
 void UDSMainMenuWidget::HideAllElements() const {
 	// Disable all the Main Menu Elements first. -Dallai
@@ -109,21 +64,6 @@ void UDSMainMenuWidget::HideAllElements() const {
 	this->SecondTitleLabel->SetVisibility(ESlateVisibility::Collapsed);
 	this->SecondTitleShadowLabel->SetVisibility(ESlateVisibility::Collapsed);
 	this->MainMenuButtonsContainer->SetVisibility(ESlateVisibility::Collapsed);
-
-	// Disable all the Join Game Screen. -Dallai
-	this->JoinGameBackgroundImage->SetVisibility(ESlateVisibility::Collapsed);
-	this->JoinGameBackgroundShadowImage->SetVisibility(ESlateVisibility::Collapsed);
-	this->FirstJoinGamePumpkin->SetVisibility(ESlateVisibility::Collapsed);
-	this->SecondJoinGamePumpkin->SetVisibility(ESlateVisibility::Collapsed);
-	this->JoinGameAddressMessage->SetVisibility(ESlateVisibility::Collapsed);
-	this->HostAddressText->SetVisibility(ESlateVisibility::Collapsed);
-	this->ConfirmJoinButton->SetVisibility(ESlateVisibility::Collapsed);
-	this->CancelJoinButton->SetVisibility(ESlateVisibility::Collapsed);
-	
-	// Disable the option elements. -Dallai
-	// this->OptionsBackgroundImage->SetVisibility(ESlateVisibility::Collapsed);
-	// this->OptionsTextLabel->SetVisibility(ESlateVisibility::Collapsed);
-	// this->OptionsMenuSettingsContainer->SetVisibility(ESlateVisibility::Collapsed);
 }
 
 void UDSMainMenuWidget::ShowMainMenu() const {
@@ -133,17 +73,6 @@ void UDSMainMenuWidget::ShowMainMenu() const {
 	this->SecondTitleLabel->SetVisibility(ESlateVisibility::Visible);
 	this->SecondTitleShadowLabel->SetVisibility(ESlateVisibility::Visible);
 	this->MainMenuButtonsContainer->SetVisibility(ESlateVisibility::Visible);
-}
-
-void UDSMainMenuWidget::ShowJoinGameMenu() const {
-	this->JoinGameBackgroundImage->SetVisibility(ESlateVisibility::Visible);
-	this->JoinGameBackgroundShadowImage->SetVisibility(ESlateVisibility::Visible);
-	this->FirstJoinGamePumpkin->SetVisibility(ESlateVisibility::Visible);
-	this->SecondJoinGamePumpkin->SetVisibility(ESlateVisibility::Visible);
-	this->JoinGameAddressMessage->SetVisibility(ESlateVisibility::Visible);
-	this->HostAddressText->SetVisibility(ESlateVisibility::Visible);
-	this->ConfirmJoinButton->SetVisibility(ESlateVisibility::Visible);
-	this->CancelJoinButton->SetVisibility(ESlateVisibility::Visible);
 }
 
 void UDSMainMenuWidget::ShowOptionsMenu() const {

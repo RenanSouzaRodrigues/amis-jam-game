@@ -50,56 +50,6 @@ public:
 	UPROPERTY(meta=(BindWidget))
 	UButton* QuitButton;
 
-	// Join Game
-	UPROPERTY(meta=(BindWidget))
-	UImage* JoinGameBackgroundImage;
-
-	UPROPERTY(meta=(BindWidget))
-	UImage* JoinGameBackgroundShadowImage;
-
-	UPROPERTY(meta=(BindWidget))
-	UImage* FirstJoinGamePumpkin;
-
-	UPROPERTY(meta=(BindWidget))
-	UImage* SecondJoinGamePumpkin;
-
-	UPROPERTY(meta=(BindWidget))
-	UTextBlock* JoinGameAddressMessage;
-	
-	UPROPERTY(meta=(BindWidget))
-	UEditableTextBox* HostAddressText;
-
-	UPROPERTY(meta=(BindWidget))
-	UButton* ConfirmJoinButton;
-
-	UPROPERTY(meta=(BindWidget))
-	UButton* CancelJoinButton;
-	
-	// Options Configs;
-	// UPROPERTY(meta=(BindWidget))
-	// UImage* OptionsBackgroundImage;
-	//
-	// UPROPERTY(meta=(BindWidget))
-	// UTextBlock* OptionsTextLabel;
-	//
-	// UPROPERTY(meta=(BindWidget))
-	// UVerticalBox* OptionsMenuSettingsContainer;
-	//
-	// UPROPERTY(meta=(BindWidget))
-	// USlider* MasterVolumeSlider;
-	//
-	// UPROPERTY(meta=(BindWidget))
-	// USlider* MusicVolumeSlider;
-	//
-	// UPROPERTY(meta=(BindWidget))
-	// USlider* SfxVolumeSlider;
-	//
-	// UPROPERTY(meta=(BindWidget))
-	// UButton* ApplySettingsButton;
-	//
-	// UPROPERTY(meta=(BindWidget))
-	// UButton* ReturnFromOptionsButton;
-
 public:
 	virtual void NativeOnInitialized() override;
 
@@ -108,47 +58,16 @@ public:
 	void OnHostGame();
 
 	UFUNCTION()
-	void OpenJoinGameMenu();
-	
-	UFUNCTION()
 	void OnJoinGame();
-
-	UFUNCTION()
-	void OnCancelJoinGame();
-
+	
 	UFUNCTION()
 	void OnOptions();
 	
 	UFUNCTION()
 	void OnQuit();
 
-	UFUNCTION()
-	void ChangeMasterVolume(const float Value);
-
-	UFUNCTION()
-	void ChangeMusicVolume(const float Value);
-
-	UFUNCTION()
-	void ChangeSfxVolume(const float Value);
-
-	UFUNCTION()
-	void ChangeScreenResolution();
-
-	UFUNCTION()
-	void ToggleVSync();
-
-	UFUNCTION()
-	void ChangeFrameRate();
-
-	UFUNCTION()
-	void ChangeVideoQuality();
-
-	UFUNCTION()
-	void ApplySettings();
-
 private:
 	void HideAllElements() const;
 	void ShowMainMenu() const;
-	void ShowJoinGameMenu() const;
 	void ShowOptionsMenu() const;
 };
