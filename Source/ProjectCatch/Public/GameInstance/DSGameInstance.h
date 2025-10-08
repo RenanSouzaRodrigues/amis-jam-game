@@ -29,7 +29,7 @@ public:
 	FString LobbyLevelName { FString("Levels/Level_Lobby") };
 	
 	UPROPERTY(EditAnywhere, Category="Game Instance Properties")
-	FString CatchGameLevelName { FString("Levels/Level_Catch") };
+	FString CatchGameLevelName { FString("Levels/Level_CatchGame") };
 	
 	
 	// ==================================================================
