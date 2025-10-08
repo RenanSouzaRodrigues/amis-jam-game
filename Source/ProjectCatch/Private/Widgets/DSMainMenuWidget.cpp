@@ -16,16 +16,16 @@ void UDSMainMenuWidget::NativeOnInitialized() {
 	// Main Menu Buttons. -Dallai
 	if (this->HostGameButton && this->JoinGameButton && this->OptionsButton && this->QuitButton) {
 		this->HostGameButton->OnClicked.AddDynamic(this, &UDSMainMenuWidget::OnHostGame);
-		this->JoinGameButton->OnClicked.AddDynamic(this, &UDSMainMenuWidget::OpenJoinGameMenu);
+		this->JoinGameButton->OnClicked.AddDynamic(this, &UDSMainMenuWidget::OnJoinGame);
 		this->OptionsButton->OnClicked.AddDynamic(this, &UDSMainMenuWidget::OnOptions);
 		this->QuitButton->OnClicked.AddDynamic(this, &UDSMainMenuWidget::OnQuit);
 	}
 
 	// Join Game Confirm Button. -Dallai
-	if (this->ConfirmJoinButton && this->CancelJoinButton) {
-		this->ConfirmJoinButton->OnClicked.AddDynamic(this, &UDSMainMenuWidget::OnJoinGame);
-		this->CancelJoinButton->OnClicked.AddDynamic(this, &UDSMainMenuWidget::OnCancelJoinGame);
-	}
+	// if (this->ConfirmJoinButton && this->CancelJoinButton) {
+	// 	this->ConfirmJoinButton->OnClicked.AddDynamic(this, &UDSMainMenuWidget::OnJoinGame);
+	// 	this->CancelJoinButton->OnClicked.AddDynamic(this, &UDSMainMenuWidget::OnCancelJoinGame);
+	// }
 	
 	// Volume Options. -Dallai;
 	// if (this->MasterVolumeSlider && this->MusicVolumeSlider && this->SfxVolumeSlider) {
@@ -45,7 +45,7 @@ void UDSMainMenuWidget::NativeOnInitialized() {
 
 void UDSMainMenuWidget::OnHostGame() {
 	if (const auto gameInstance = Cast<UDSGameInstance>(this->GetGameInstance())) {
-		gameInstance->HostGame();
+		gameInstance->CreateSession();
 	} else {
 		DS_LOG_ERROR("Host game error: Fail to retrieve game instance in order to host the game. Make sure the default game instance is of type UDSGameInstance");
 	}
@@ -57,18 +57,14 @@ void UDSMainMenuWidget::OpenJoinGameMenu() {
 }
 
 void UDSMainMenuWidget::OnJoinGame() {
-	const auto serverAddress = this->HostAddressText->GetText();
+	const auto gameInstance = Cast<UDSGameInstance>(this->GetGameInstance());
 
-	if (serverAddress.IsEmpty()) {
-		DS_LOG_ERROR("Host address is empty");
+	if (!gameInstance) {
+		DS_LOG_ERROR("Main Menu Widget Error: Game Instance is invalid or not of type DSGameInstance");
 		return;
 	}
-	
-	if (const auto gameInstance = Cast<UDSGameInstance>(this->GetGameInstance())) {
-		gameInstance->JoinGame(serverAddress.ToString());
-	} else {
-		DS_LOG_ERROR("Join game error: Fail to retrieve game instance in order to host the game. Make sure the default game instance is of type UDSGameInstance");
-	}
+
+	gameInstance->FindSession();
 }
 
 void UDSMainMenuWidget::OnCancelJoinGame() {

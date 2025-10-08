@@ -1,52 +1,61 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Made by Dallai Studios - 2025
 
 #include "GameInstance/DSGameInstance.h"
 
-#include "AdvancedSessionsLibrary.h"
-#include "CreateSessionCallbackProxyAdvanced.h"
-#include "FindSessionsCallbackProxyAdvanced.h"
-#include "Kismet/GameplayStatics.h"
+#include "Online/OnlineSessionNames.h"
 #include "Utils/DSMacros.h"
-#include "OnlineSubsystem.h"
-#include "Data/DSGameUserSettings.h"
-#include "Interfaces/OnlineSessionInterface.h"
+
+void UDSGameInstance::Init() {
+	Super::Init();
+
+	IOnlineSubsystem* subsystem = IOnlineSubsystem::Get();
+
+	if (!subsystem) {
+		DS_LOG_ERROR("Game Instance Error: Online subsystem is invalid");
+		return;
+	}
+
+	this->OnlineSessionInterfacePointer = subsystem->GetSessionInterface();
+
+	if (!this->OnlineSessionInterfacePointer.IsValid()) {
+		DS_LOG_ERROR("Game Instance Error: Online subsystem interface is invalid");
+		return;
+	}
+
+	this->OnlineSessionInterfacePointer->OnCreateSessionCompleteDelegates.AddUObject(this, &UDSGameInstance::OnCreateSessionComplete);
+	this->OnlineSessionInterfacePointer->OnFindSessionsCompleteDelegates.AddUObject(this, &UDSGameInstance::OnFindSessionsComplete);
+	this->OnlineSessionInterfacePointer->OnJoinSessionCompleteDelegates.AddUObject(this, &UDSGameInstance::OnJoinSessionComplete);
+}
 
 // ==================================================================
 // LOBBY CREATION
 // ==================================================================
 void UDSGameInstance::CreateSession() const {
-	APlayerController* playerController = this->GetFirstLocalPlayerController();
+	if (!this->OnlineSessionInterfacePointer.IsValid()) {
+		DS_LOG_ERROR("Game Instance Error: Online subsystem interface is invalid");
+		return;
+	}
 
-	if (!playerController) {
-		DS_LOG_ERROR("Game Instance Error: Player Controller is invalid");
+	FOnlineSessionSettings sessionSettings;
+	sessionSettings.bIsLANMatch = false;
+	sessionSettings.NumPublicConnections = 6;
+	sessionSettings.bShouldAdvertise = true;
+	sessionSettings.bUsesPresence = true;
+	sessionSettings.bAllowJoinInProgress = true;
+	sessionSettings.bAllowJoinViaPresence = true;
+	sessionSettings.bAllowJoinViaPresenceFriendsOnly = false;
+	
+	this->OnlineSessionInterfacePointer->CreateSession(0, GAME_SESSION_NAME, sessionSettings);
+}
+
+void UDSGameInstance::OnCreateSessionComplete(FName SessionName, bool bWasSuccessful) {
+	if (!bWasSuccessful) {
+		DS_LOG_ERROR("Game Instance Error: Session Creation Error");
 		return;
 	}
 	
-	FSessionPropertyKeyPair mapPropertyKeyPair;
-	mapPropertyKeyPair.Key = GAME_IDENTIFIER;
-	mapPropertyKeyPair.Data.SetValue(this->LobbyLevelName.ToString());
-
-	TArray<FSessionPropertyKeyPair> sessionExtraSettings;
-	sessionExtraSettings.Add(mapPropertyKeyPair);
-	
-	const auto session = UCreateSessionCallbackProxyAdvanced::CreateAdvancedSession(this->GetWorld(), sessionExtraSettings, playerController);
-
-	if (!session) {
-		DS_LOG_ERROR("Game Instance Error: Fail to create session proxy");
-		return;
-	}
-	
-	session->OnSuccess.AddDynamic(this, &ThisClass::OnCreateSessionSuccess);
-	session->OnFailure.AddDynamic(this, &ThisClass::OnCreateSessionFail);
-}
-
-void UDSGameInstance::OnCreateSessionSuccess() {
-	UGameplayStatics::OpenLevel(this->GetWorld(), this->LobbyLevelName, true, "listen");
-	DS_LOG_SUCCESS("Game Instance Success: Game Session is now Created");
-}
-
-void UDSGameInstance::OnCreateSessionFail() {
-	DS_LOG_ERROR("Game Instance Error: Error trying to create a session and host a new game");
+	DS_LOG_SUCCESS(FString::Printf(TEXT("Game Instance Success: New game session created with name %s"), *SessionName.ToString()));
+	this->GetWorld()->ServerTravel(this->LobbyLevelName + "?listen");
 }
 
 
@@ -54,52 +63,44 @@ void UDSGameInstance::OnCreateSessionFail() {
 // FIND SESSIONS
 // ====================================================================
 void UDSGameInstance::FindSession() {
-	APlayerController* playerController = GetFirstLocalPlayerController();
-	
-	if (!playerController) {
-		DS_LOG_ERROR("Game Instance Error: player controller is invalid. cant find sessions");
-		return;
-	}
+	if (!this->OnlineSessionInterfacePointer.IsValid()) return;
 
-	TArray<FSessionsSearchSetting> filters;
-	
-	const auto findSessionResult = UFindSessionsCallbackProxyAdvanced::FindSessionsAdvanced(
-		this->GetWorld(),
-		playerController,
-		10,
-		false,
-		EBPServerPresenceSearchType::ClientServersOnly,
-		filters
-	);
+	this->SessionSearch = MakeShareable(new FOnlineSessionSearch());
+	this->SessionSearch->bIsLanQuery = false;
+	this->SessionSearch->MaxSearchResults = 20;
+	this->SessionSearch->QuerySettings.Set(SEARCH_PRESENCE, true, EOnlineComparisonOp::Equals);
 
-	if (!findSessionResult) {
-		DS_LOG_ERROR("Game Instance Error: Fail to create find session proxy");
-		return;
-	}
-
-	findSessionResult->OnSuccess.AddDynamic(this, &ThisClass::OnFindSessionSuccess);
-	findSessionResult->OnFailure.AddDynamic(this, &ThisClass::OnFindSessionFail);
+	this->OnlineSessionInterfacePointer->FindSessions(0, this->SessionSearch.ToSharedRef());
 }
 
-void UDSGameInstance::OnFindSessionSuccess(const TArray<FBlueprintSessionResult>& Results) {
-	for (int32 index = 0; index < Results.Num(); ++index) {
-		FString SessionName;
-		Results[index].OnlineResult.Session.SessionSettings.Get(GAME_IDENTIFIER, SessionName);
-		if (SessionName == this->LobbyLevelName.ToString()) {
-			this->JoinSession(Results[index]);
-			return;
-		}
-	}
-}
+void UDSGameInstance::OnFindSessionsComplete(bool bWasSuccessful) {
+	if (!bWasSuccessful || !SessionSearch.IsValid()) return;
 
-void UDSGameInstance::OnFindSessionFail(const TArray<FBlueprintSessionResult>& Results) {
-	UE_LOG(LogTemp, Error, TEXT("FindGames: No sessions found."));
+	for (const FOnlineSessionSearchResult& Result : SessionSearch->SearchResults)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Sessão encontrada: %s"), *Result.GetSessionIdStr());
+		this->JoinFoundSession(Result);
+		return; // entra na primeira encontrada
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Nenhuma sessão encontrada"));
 }
 
 
 // ====================================================================
 // JOIN SESSION
 // ====================================================================
-void UDSGameInstance::JoinSession(const FBlueprintSessionResult& Session) {
-	
+void UDSGameInstance::JoinFoundSession(const FOnlineSessionSearchResult& Result) const {
+	if (!this->OnlineSessionInterfacePointer.IsValid()) return;
+	this->OnlineSessionInterfacePointer->JoinSession(0, GAME_SESSION_NAME, Result);
+}
+
+void UDSGameInstance::OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result) {
+	if (!this->OnlineSessionInterfacePointer.IsValid()) return;
+	FString connectionString;
+	if (this->OnlineSessionInterfacePointer->GetResolvedConnectString(SessionName, connectionString)) {
+		if (const auto playerController = this->GetFirstLocalPlayerController()) {
+			playerController->ClientTravel(connectionString, TRAVEL_Absolute);
+		}	
+	}
 }

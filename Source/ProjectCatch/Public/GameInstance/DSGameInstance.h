@@ -3,16 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AdvancedFriendsGameInstance.h"
 #include "Engine/GameInstance.h"
+#include "Interfaces/OnlineSessionInterface.h"
+#include "OnlineSessionSettings.h"
 #include "DSGameInstance.generated.h"
 
-#define GAME_IDENTIFIER FName("PROJECT_CATCH_LEVEL_NAME")
+#define GAME_SESSION_NAME TEXT("CURSEDCATCH_GAME_SESSION")
 
 class UDSGameUserSettings;
 
 UCLASS()
-class PROJECTCATCH_API UDSGameInstance : public UAdvancedFriendsGameInstance 
+class PROJECTCATCH_API UDSGameInstance : public UGameInstance 
 {
 	GENERATED_BODY()
 
@@ -21,48 +22,46 @@ public:
 	FName MainMenuLevelName { FName("Level_MainMenu") };
 
 	UPROPERTY(EditAnywhere, Category="Game Instance Properties")
-	FName LobbyLevelName { FName("Level_Lobby") };
+	FString LobbyLevelName { "Game/Levels/Level_Lobby" };
 	
 	UPROPERTY(EditAnywhere, Category="Game Instance Properties")
 	FName CatchGameLevelName { FName("Level_CatchGame") };
 
 
+private:
+	IOnlineSessionPtr OnlineSessionInterfacePointer;
+	TSharedPtr<FOnlineSessionSearch> SessionSearch;
+
+	FORCEINLINE bool IsOnlineSessionInterfaceValid() const { return this->OnlineSessionInterfacePointer.IsValid(); }
+
+	
+	// ==================================================================
+	// UNREAL LIFECYCLE
+	// ==================================================================	
+public:
+	virtual void Init() override;
+	
 	// ==================================================================
 	// HOST GAME
 	// ==================================================================
 public:
-	UFUNCTION()
     void CreateSession() const;
 
-	UFUNCTION()
-	void OnCreateSessionSuccess();
-
-	UFUNCTION()
-	void OnCreateSessionFail();
+	void OnCreateSessionComplete(FName SessionName, bool bWasSuccessful);
 	
-
+	
 	// ==================================================================
 	// FIND SESSION
 	// ==================================================================
-	UFUNCTION()
 	void FindSession();
 
-	UFUNCTION()
-	void OnFindSessionSuccess(const TArray<FBlueprintSessionResult>& Results);
-
-	UFUNCTION()
-	void OnFindSessionFail(const TArray<FBlueprintSessionResult>& Results);
+	void OnFindSessionsComplete(bool bWasSuccessful);
 	
 	
 	// ==================================================================
 	// JOIN SESSION
 	// ==================================================================
-	UFUNCTION()
-	void JoinSession(const FBlueprintSessionResult& Session);
+	void JoinFoundSession(const FOnlineSessionSearchResult& Session) const;
 
-	UFUNCTION()
-	void OnJoinSessionSuccess();
-
-	UFUNCTION()
-	void OnJoinSessionFail();
+	void OnJoinSessionComplete(FName SessionName, EOnJoinSessionCompleteResult::Type Result);
 };
