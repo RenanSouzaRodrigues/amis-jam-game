@@ -5,6 +5,7 @@
 
 #include "OnlineSessionSettings.h"
 #include "OnlineSubsystem.h"
+#include "Online/OnlineSessionNames.h"
 #include "Utils/DSMacros.h"
 
 // This session plugin is ready to be tested but, still need to do somethings.
@@ -134,9 +135,8 @@ void UDSSessionSubsystem::CreateSession(int32 numberOfPublicConnections, FString
 	// If the session is not created, then is probably a problem with the engine lifecycle.
 	// I think this is a very impossible scenario, but we never know. Better safe then sorry. -Renan
 	DS_LOG_INFO("Trying to create a new session");
-	UEMSUtils::ShowDebugMessage(TEXT("Trying to create a new session"));
 	if (!this->OnlineSubsystemSessionInterface->CreateSession(*hostPlayerNetId, NAME_GameSession, *this->OnlineSessionSettings)) {
-		UEMSUtils::ShowDebugMessage(TEXT("Session was not created, aborting process and started cleaning delegates Line 130"), FColor::Red);
+		DS_LOG_ERROR("Session was not created, aborting process and started cleaning delegates");
 		this->OnlineSubsystemSessionInterface->ClearOnCreateSessionCompleteDelegate_Handle(this->CreateSessionDelegateHandle);
 		this->OnSessionCreatedEvent.Broadcast(false);
 	}
@@ -151,24 +151,24 @@ void UDSSessionSubsystem::OnCreateSessionEventListenerCallback(FName createdSess
 	this->OnlineSubsystemSessionInterface->ClearOnCreateSessionCompleteDelegate_Handle(this->CreateSessionDelegateHandle);
 
 	this->OnSessionCreatedEvent.Broadcast(bWasSuccessfullCreated);
-	UEMSUtils::ShowDebugMessage(TEXT("Session created successfully!"), FColor::Green);
+	DS_LOG_SUCCESS("Session created successfully");
 }
 
 void UDSSessionSubsystem::OpenGameLevelAsHostServer(FString pathToLobby) {
 	if (!this->IsOnlineSubsystemInterfaceValid()) {
-		UEMSUtils::ShowDebugMessage(TEXT("Unable to open game level as host. Aborting process."), FColor::Red);
+		DS_LOG_ERROR("Unable to open game level as host. Aborting process.");
 		return;
 	}
 
 	FNamedOnlineSession* existingSession = this->OnlineSubsystemSessionInterface->GetNamedSession(NAME_GameSession);
 	if (existingSession == nullptr) {
-		UEMSUtils::ShowDebugMessage(TEXT("Error: There is no created session. Unable to open game level as host. Aborting process"), FColor::Red);
+		DS_LOG_ERROR("Error: There is no created session. Unable to open game level as host. Aborting process");
 		return;
 	}
 	
 	UWorld* world = this->GetWorld();
 	if (!world) {
-		UEMSUtils::ShowDebugMessage(TEXT("Unable to retrive world information to open lobby level. Aborting process"), FColor::Red);
+		DS_LOG_ERROR("Unable to retrive world information to open lobby level. Aborting process");
 		return;
 	}
 
@@ -203,7 +203,7 @@ void UDSSessionSubsystem::FindSession(int32 maxOnlineSessionsSearchResult, float
 
 	// Same for the creation method. I need the local player controller here to be able to join sessions on the future. -Renan
 	if (!localPlayer) {
-		UEMSUtils::ShowDebugMessage(TEXT("No local player controller found. Aborting Find Session Process. A Local Player Controller is required in order search for sessions"), FColor::Red);
+		DS_LOG_ERROR("No local player controller found. Aborting Find Session Process. A Local Player Controller is required in order search for sessions");
 		this->OnlineSubsystemSessionInterface->ClearOnFindSessionsCompleteDelegate_Handle(this->FindSessionDelegateHandle);
 		TArray<FEMSOnlineSessionSearchResult> emptySearchResult = TArray<FEMSOnlineSessionSearchResult>();
 		this->OnSessionFoundEvent.Broadcast(emptySearchResult, false);
@@ -212,7 +212,7 @@ void UDSSessionSubsystem::FindSession(int32 maxOnlineSessionsSearchResult, float
 	
 	const FUniqueNetIdRepl& localPlayerNetId = localPlayer->GetPreferredUniqueNetId();
 	if (!localPlayerNetId.IsValid()) {
-		UEMSUtils::ShowDebugMessage(TEXT("Local Player UniqueNetId is invalid. Are you logged on Steam? Aborting session finding process."), FColor::Red);
+		DS_LOG_ERROR("Local Player UniqueNetId is invalid. Are you logged on Steam? Aborting session finding process.");
 		TArray<FEMSOnlineSessionSearchResult> emptySearchResult = TArray<FEMSOnlineSessionSearchResult>();
 		this->OnSessionFoundEvent.Broadcast(emptySearchResult, false);
 		return;
@@ -220,7 +220,7 @@ void UDSSessionSubsystem::FindSession(int32 maxOnlineSessionsSearchResult, float
 	
 	// If there is any error when the subsystem tries to retrieve the list of sessions to join, I simple send a log and broadcast a false response. -Renan
 	if (!this->OnlineSubsystemSessionInterface->FindSessions(*localPlayerNetId, this->OnlineSessionSearch.ToSharedRef())) {
-		UEMSUtils::ShowDebugMessage(TEXT("Unable to find sessions. Aborting Process. Line 163"), FColor::Red);
+		DS_LOG_ERROR("Unable to find sessions. Aborting Process.");
 		this->OnlineSubsystemSessionInterface->ClearOnFindSessionsCompleteDelegate_Handle(this->FindSessionDelegateHandle);
 		TArray<FEMSOnlineSessionSearchResult> emptySearchResult = TArray<FEMSOnlineSessionSearchResult>();
 		this->OnSessionFoundEvent.Broadcast(emptySearchResult, false);
@@ -345,7 +345,7 @@ void UDSSessionSubsystem::OnJoinSessionEventListenerCallback(FName joinedSession
 	this->OnlineSubsystemSessionInterface->ClearOnJoinSessionCompleteDelegate_Handle(this->JoinSessionDelegateHandle);
 	
 	this->OnSessionJoinedEvent.Broadcast(this->ConvertJoinResult(joinResultType));
-	if (joinResultType == EOnJoinSessionCompleteResult::Success) UEMSUtils::ShowDebugMessage(TEXT("Session Joined Successfully!"), FColor::Green);
+	if (joinResultType == EOnJoinSessionCompleteResult::Success) DS_LOG_SUCCESS("Session Joined Successfully!");
 }
 
 // Same thing here. I can use this function to make use of the blueprint reflection system. -Renan
@@ -364,7 +364,7 @@ EEMSJoinSessionCompleteResult UDSSessionSubsystem::ConvertJoinResult(const EOnJo
 
 void UDSSessionSubsystem::ConnectToJoinedSession() {
 	if (!this->IsOnlineSubsystemInterfaceValid()) {
-		UEMSUtils::ShowDebugMessage(TEXT("Unable to connect to session. Aborting process."), FColor::Red);
+		DS_LOG_ERROR("Unable to connect to session. Aborting process.");
 		return;
 	}
 
@@ -375,7 +375,7 @@ void UDSSessionSubsystem::ConnectToJoinedSession() {
 
 	// I validate the connection string so the user can't even try to connect to the empty address. -Renan
 	if (connectionAddress.IsEmpty()) {
-		UEMSUtils::ShowDebugMessage(TEXT("Unable to connect to joined session. Could not retrieve the session connection string addres."), FColor::Red);
+		DS_LOG_ERROR("Unable to connect to joined session. Could not retrieve the session connection string address.");
 		return;
 	}
 	
@@ -400,7 +400,7 @@ void UDSSessionSubsystem::StartSession() {
 	this->StartSessionDelegateHandle = this->OnlineSubsystemSessionInterface->AddOnStartSessionCompleteDelegate_Handle(this->OnStartSessionEvent);
 
 	if (!this->OnlineSubsystemSessionInterface->StartSession(NAME_GameSession)) {
-		UEMSUtils::ShowDebugMessage(TEXT("Unable to start the session, aborting process and cleaning delegates"), FColor::Red);
+		DS_LOG_ERROR("Unable to start the session, aborting process and cleaning delegates");
 		this->OnlineSubsystemSessionInterface->ClearOnStartSessionCompleteDelegate_Handle(this->StartSessionDelegateHandle);
 		this->OnSessionStartedEvent.Broadcast(false);
 	}
@@ -415,7 +415,7 @@ void UDSSessionSubsystem::OnStartSessionEventListenerCallback(FName sessionName,
 	this->OnlineSubsystemSessionInterface->ClearOnStartSessionCompleteDelegate_Handle(this->StartSessionDelegateHandle);
 
 	this->OnSessionStartedEvent.Broadcast(bWasSuccessful);
-	if (bWasSuccessful) UEMSUtils::ShowDebugMessage(TEXT("Session Started successfully!"), FColor::Green);
+	if (bWasSuccessful) DS_LOG_SUCCESS("Session Started successfully!");
 }
 
 
@@ -434,7 +434,7 @@ void UDSSessionSubsystem::DestroySession() {
 	this->DestroySessionDelegateHandle = this->OnlineSubsystemSessionInterface->AddOnDestroySessionCompleteDelegate_Handle(this->OnDestroySessionEvent);
 	
 	if (!this->OnlineSubsystemSessionInterface->DestroySession(NAME_GameSession)) {
-		UEMSUtils::ShowDebugMessage(TEXT("Unable to destroy session, aborting process and cleaning delegates"), FColor::Red);
+		DS_LOG_ERROR("Unable to destroy session, aborting process and cleaning delegates");
 		this->OnlineSubsystemSessionInterface->ClearOnDestroySessionCompleteDelegate_Handle(this->DestroySessionDelegateHandle);
 		this->OnSessionDestroyedEvent.Broadcast(false);
 	}
@@ -452,10 +452,10 @@ void UDSSessionSubsystem::OnDestroySessionEventListenerCallback(FName sessionNam
 
 	if (this->bCreateSessionAfterDestroy && bWasSuccessful) {
 		this->bCreateSessionAfterDestroy = false;
-		UEMSUtils::ShowDebugMessage(TEXT("Previous Session destroyed. Ready to create a new session."));
+		DS_LOG_INFO("Previous Session destroyed. Ready to create a new session.");
 		this->CreateSession(this->CachedNumberOfPublicPlayers, this->CachedMatchTypeName);
 		return;
 	}
 	
-	if (bWasSuccessful) UEMSUtils::ShowDebugMessage(TEXT("Session Destroyed Successfully!"), FColor::Green);
+	if (bWasSuccessful) DS_LOG_SUCCESS("Session Destroyed Successfully!");
 }
