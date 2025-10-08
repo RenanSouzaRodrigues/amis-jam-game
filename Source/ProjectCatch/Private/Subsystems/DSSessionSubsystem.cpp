@@ -68,10 +68,6 @@ bool UDSSessionSubsystem::IsOnlineSubsystemInterfaceValid() const {
 // ===================================================
 // Create Session
 // ===================================================
-void UDSSessionSubsystem::OverrideSessionCreationSettings(UEMSSessionCreationSettingsPDA* settingsToOverride) {
-	this->SessionCreationSettingsOverride = settingsToOverride;
-}
-
 void UDSSessionSubsystem::CreateSession(int32 numberOfPublicConnections, FString matchTypeName) {
 	// Check if the online subsystem session interface I have is valid. If not, I'm simply returning void and
 	// broadcasting the event with false value. -Renan
@@ -168,7 +164,7 @@ void UDSSessionSubsystem::OpenGameLevelAsHostServer(FString pathToLobby) {
 	
 	UWorld* world = this->GetWorld();
 	if (!world) {
-		DS_LOG_ERROR("Unable to retrive world information to open lobby level. Aborting process");
+		DS_LOG_ERROR("Unable to retrieve world information to open lobby level. Aborting process");
 		return;
 	}
 
@@ -243,10 +239,6 @@ void UDSSessionSubsystem::OnFindSessionEventListenerCallback(bool bWasSuccessful
 		this->OnSessionFoundEvent.Broadcast(emptySearchResult, false);
 	}
 
-	for (auto session : this->OnlineSessionSearch->SearchResults) {
-		UEMSUtils::ShowDebugMessage(FString::Printf(TEXT("Found Session: %s Line 334"), *session.GetSessionIdStr()), FColor::Blue);
-	}
-
 	// This is a conversion to enable the plugins users to see this result using blueprint API.
 	// When this translation is done, this is what the delegate sends to the blueprint reflections system;
 	// BUG: There is probably a bug here. I dont know if all the values are been translated correctly.
@@ -256,7 +248,7 @@ void UDSSessionSubsystem::OnFindSessionEventListenerCallback(bool bWasSuccessful
 	}
 	
 	this->OnSessionFoundEvent.Broadcast(results, bWasSuccessfull);
-	UEMSUtils::ShowDebugMessage(TEXT("Find Session Results returned successfully!"), FColor::Green);
+	DS_LOG_SUCCESS("Find Session Results returned successfully!");
 }
 
 bool UDSSessionSubsystem::FilterSessionResultsByMatchType(const TArray<FEMSOnlineSessionSearchResult>& Results, const FString& MatchTypeName, FEMSOnlineSessionSearchResult& OutResult) {
@@ -295,7 +287,7 @@ FEMSOnlineSessionSearchResult UDSSessionSubsystem::ConvertSessionResult(FOnlineS
 void UDSSessionSubsystem::JoinSession(const FEMSOnlineSessionSearchResult& onlineSessionSearchResult) {
 	// I first validate the session search result because, if this is null or invalid there is no reason to try join this session. -Renan
 	if (!onlineSessionSearchResult.IsValid()) {
-		UEMSUtils::ShowDebugMessage(TEXT("Unable to Join Session, the search result provided is invalid"));
+		DS_LOG_ERROR("Unable to Join Session, the search result provided is invalid");
 		this->OnSessionJoinedEvent.Broadcast(this->ConvertJoinResult(EOnJoinSessionCompleteResult::UnknownError));
 		return;
 	}
@@ -315,7 +307,7 @@ void UDSSessionSubsystem::JoinSession(const FEMSOnlineSessionSearchResult& onlin
 
 	const ULocalPlayer* localPlayer = this->GetWorld()->GetFirstLocalPlayerFromController();
 	if (!localPlayer) {
-		UEMSUtils::ShowDebugMessage(TEXT("No local player controller found. Aborting Join Session Process. A Local Player Controller is required in order to join a session"), FColor::Red);
+		DS_LOG_ERROR("No local player controller found. Aborting Join Session Process. A Local Player Controller is required in order to join a session");
 		this->OnlineSubsystemSessionInterface->ClearOnJoinSessionCompleteDelegate_Handle(this->JoinSessionDelegateHandle);
 		this->OnSessionJoinedEvent.Broadcast(this->ConvertJoinResult(EOnJoinSessionCompleteResult::UnknownError));
 		return;
@@ -323,16 +315,15 @@ void UDSSessionSubsystem::JoinSession(const FEMSOnlineSessionSearchResult& onlin
 
 	const FUniqueNetIdRepl& localPlayerNetId = localPlayer->GetPreferredUniqueNetId();
 	if (!localPlayerNetId.IsValid()) {
-		UEMSUtils::ShowDebugMessage(TEXT("Local Player UniqueNetId is invalid. Are you logged on Steam? Aborting session joining process."), FColor::Red);
+		DS_LOG_ERROR("Local Player UniqueNetId is invalid. Are you logged on Steam? Aborting session joining process.");
 		this->OnSessionJoinedEvent.Broadcast(this->ConvertJoinResult(EOnJoinSessionCompleteResult::UnknownError));
 		return;
 	}
 	
 	if (!this->OnlineSubsystemSessionInterface->JoinSession(*localPlayerNetId, NAME_GameSession, onlineSessionSearchResult.OriginalSearchResult)) {
-		UEMSUtils::ShowDebugMessage(TEXT("Unable to join session for some error. Aborting process: Line 211"), FColor::Red);
+		DS_LOG_ERROR("Unable to join session for some error. Aborting process");
 		this->OnlineSubsystemSessionInterface->ClearOnJoinSessionCompleteDelegate_Handle(this->JoinSessionDelegateHandle);
 		this->OnSessionJoinedEvent.Broadcast(this->ConvertJoinResult(EOnJoinSessionCompleteResult::UnknownError));
-		return;
 	}
 }
 

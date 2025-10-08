@@ -4,8 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Interfaces/OnlineSessionInterface.h"
+#include "Structs/FEMSOnlineSessionSearchResult.h"
+#include "Enums/EEMSJoinSessionCompleteResult.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "DSSessionSubsystem.generated.h"
+
+struct FEMSOnlineSessionSearchResult;
 
 // All the blueprint Delegates the user can bind events to. -Renan
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FEasyMultiplayerSessionCreatedDelegate, bool, bSessionCreated);
@@ -61,13 +65,6 @@ private:
 	FString CachedMatchTypeName;
 	
 public:
-	/**
-	 * Method that can be used to override the default session creation settings.
-	 * @param settingsToOverride A Data Asset object reference based on EMSSessionCreationSettingsPDA
-	 */
-	UFUNCTION(BlueprintCallable)
-	void OverrideSessionCreationSettings(UEMSSessionCreationSettingsPDA* settingsToOverride);
-	
 	/**
 	 * Method that creates a new online multiplayer session. This method also fires up an event in case the session was
 	 * successfully created or not. You can bind a Custom Event Listeners to the OnSessionCreatedEvent to handle any use case.
